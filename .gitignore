@@ -1,0 +1,40 @@
+*.sql
+
+# Binaries and executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.bin
+*.o
+*.a
+
+# Test binaries
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Project-specific output
+jwt-cracker-go
+jwt-cracker-go.exe
+
+# Dependency directories (remove these if you're using Go modules)
+/vendor/
+/Godeps/
+
+# Editor files and directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp
+temp
