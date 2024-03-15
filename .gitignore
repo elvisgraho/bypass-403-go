@@ -17,8 +17,8 @@
 *.out
 
 # Project-specific output
-jwt-cracker-go
-jwt-cracker-go.exe
+403-bypass-go
+403-bypass-go.exe
 
 # Dependency directories (remove these if you're using Go modules)
 /vendor/
