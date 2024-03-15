@@ -17,8 +17,8 @@
 *.out
 
 # Project-specific output
-403-bypass-go
-403-bypass-go.exe
+bypass-403-go
+bypass-403-go.exe
 
 # Dependency directories (remove these if you're using Go modules)
 /vendor/

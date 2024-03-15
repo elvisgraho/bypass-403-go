@@ -47,15 +47,15 @@ func UserInput() (string, []string, int) {
 }
 
 func PrintUsage() {
-	fmt.Println("403-bypass-go - Bypass 403 Forbidden requests for specific endpoints.")
-	fmt.Println("Usage: 403-bypass-go -u <URL> [-h <header>] [-hfile <header_file>]")
+	fmt.Println("bypass-403-go - Bypass 403 Forbidden requests for specific endpoints.")
+	fmt.Println("Usage: bypass-403-go -u <URL> [-h <header>] [-hfile <header_file>]")
 	fmt.Println("Flags:")
 	fmt.Println("  -u <URL>             : Target URL (mandatory), https://example.com/admin")
 	fmt.Println("  -h <header>          : User header (optional), e.g., 'Cookie: ...'")
 	fmt.Println("  -hfile <header_file> : File containing user headers (optional), one header per line")
 	fmt.Println("  -fs int : Supresses output with the desired size.")
 	fmt.Println("Example:")
-	fmt.Println("  403-bypass-go -u https://example.com/secret -h 'Cookie: lol'")
-	fmt.Println("  403-bypass-go -u https://example.com/secret -hfile headers.txt")
-	fmt.Println("  403-bypass-go -u https://example.com/secret -hfile headers.txt -fs 42")
+	fmt.Println("  bypass-403-go -u https://example.com/secret -h 'Cookie: lol'")
+	fmt.Println("  bypass-403-go -u https://example.com/secret -hfile headers.txt")
+	fmt.Println("  bypass-403-go -u https://example.com/secret -hfile headers.txt -fs 42")
 }

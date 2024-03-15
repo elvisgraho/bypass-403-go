@@ -1,3 +1,3 @@
-module github.com/elvisgraho/403-bypass-go/playground
+module github.com/elvisgraho/bypass-403-go/playground
 
 go 1.22.0

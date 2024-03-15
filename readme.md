@@ -7,7 +7,7 @@
 ### Installation
 
 ```bash
-go install github.com/elvisgraho/403-bypass-go@latest
+go install github.com/elvisgraho/bypass-403-go@latest
 ```
 
 ### Flags
@@ -20,9 +20,9 @@ go install github.com/elvisgraho/403-bypass-go@latest
 ### Examples
 
 ```sh
-403-bypass-go -u https://example.com/secret -h 'Cookie: lol'
-403-bypass-go -u https://example.com/secret -hfile headers.txt
-403-bypass-go -u https://example.com/secret -hfile headers.txt -fs 42
+bypass-403-go -u https://example.com/secret -h 'Cookie: lol'
+bypass-403-go -u https://example.com/secret -hfile headers.txt
+bypass-403-go -u https://example.com/secret -hfile headers.txt -fs 42
 ```
 
 ### Testing with Playground (local)
@@ -42,9 +42,9 @@ Playground output
 
 ```console
 $ go run .\main.go -u "http://localhost:8080/admin" -h "Cookie: hello"
-2024/03/15 16:03:38.692321 Started 403-bypass-go
+2024/03/15 16:03:38.692321 Started bypass-403-go
 PUT <http://localhost:8080/admin> 200 OK. Length: 44.
 GET <http://localhost:8080/admin> 200 OK. Length: 44. Cluster-Client-IP: localhost
 GET <http://localhost:8080/admin> 200 OK. Length: 44. X-Forwarded-Port: 8080
-2024/03/15 16:03:41.889985 Finished 403-bypass-go
+2024/03/15 16:03:41.889985 Finished bypass-403-go
 ```

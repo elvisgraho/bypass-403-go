@@ -4,7 +4,7 @@ import (
 	"embed"
 	"log"
 
-	"github.com/elvisgraho/403-bypass-go/utils"
+	"github.com/elvisgraho/bypass-403-go/utils"
 )
 
 //go:embed payloads/*.txt
@@ -13,7 +13,7 @@ var payloadFiles embed.FS
 func main() {
 	// Set log output format to include timestamps
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
-	log.Println("Started 403-bypass-go")
+	log.Println("Started bypass-403-go")
 
 	// Parse user input
 	url, userHeaders, filterSize := utils.UserInput()
@@ -49,5 +49,5 @@ func main() {
 		utils.XForwardedPortsAttack(url, payloads["ports.txt"], userHeaders, filterSize)
 	}
 
-	log.Println("Finished 403-bypass-go")
+	log.Println("Finished bypass-403-go")
 }
