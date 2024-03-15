@@ -1,8 +1,8 @@
-# 403 Bypass Go
+# Bypass 403 Go
 
 ## Description
 
-403 Bypass Go is a tool designed to bypass 403 Forbidden responses for specific endpoints. It allows users to make HTTP requests to specified URLs and includes options for adding custom headers to the requests.
+Bypass 403 Go is a tool designed to bypass 403 Forbidden responses for specific endpoints. It allows users to make HTTP requests to specified URLs and includes options for adding custom headers to the requests.
 
 ### Installation
 
