@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"time"
 )
@@ -13,15 +14,16 @@ type UserSettings struct {
 	Timeout     time.Duration
 	UserHeader  string
 	UserHeaders []string
+	Url         url.URL
 }
 
-func UserInput() (string, UserSettings) {
+func UserInput() UserSettings {
 	// Define flags
-	var url string
+	var inputUrl string
 	var userHeadersFile string
 	var userSettings UserSettings
 
-	flag.StringVar(&url, "u", "", "Target URL (mandatory)")
+	flag.StringVar(&inputUrl, "u", "", "Target URL (mandatory)")
 	flag.StringVar(&userSettings.UserHeader, "h", "", "User header (optional), specify multiple times")
 	flag.StringVar(&userHeadersFile, "hfile", "", "File containing user headers (optional), one header per line")
 	flag.IntVar(&userSettings.FilterSize, "fs", 0, "Filter size (optional)")
@@ -31,7 +33,7 @@ func UserInput() (string, UserSettings) {
 	flag.Parse()
 
 	// Check if mandatory flag is provided
-	if url == "" || len(os.Args) == 1 {
+	if inputUrl == "" || len(os.Args) == 1 {
 		PrintUsage()
 		os.Exit(1)
 	}
@@ -50,7 +52,16 @@ func UserInput() (string, UserSettings) {
 		userSettings.UserHeaders = append(userSettings.UserHeaders, userSettings.UserHeader)
 	}
 
-	return url, userSettings
+	// parse url
+	parsedURL, err := url.Parse(inputUrl)
+	if err != nil {
+		fmt.Println("Error parsing URL:", err)
+		os.Exit(1)
+	}
+
+	userSettings.Url = *parsedURL
+
+	return userSettings
 }
 
 func PrintUsage() {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 )
@@ -84,8 +83,8 @@ func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSet
 			// print out
 			fmt.Printf("\x1b[32m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
 		}
-	} else if resp.StatusCode == 404 && doStop404 {
-		fmt.Printf("\x1b[31m404 Error. %s %s. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, additionalOutString)
+	} else if (resp.StatusCode == 404 || resp.StatusCode == 400) && doStop404 {
+		fmt.Printf("\x1b[31m%d Error. %s %s. %s\x1b[0m\n", resp.StatusCode, resp.Request.Method, resp.Request.URL, additionalOutString)
 		os.Exit(1)
 		defer resp.Body.Close()
 	} else {
@@ -95,27 +94,6 @@ func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSet
 
 	// Close the response body
 	defer resp.Body.Close()
-}
-
-func SplitUrl(userURL string) ([]string, error) {
-	parsedURL, err := url.Parse(userURL)
-	if err != nil {
-		return nil, err
-	}
-
-	// Extract base URL
-	baseURL := fmt.Sprintf("%s://%s", parsedURL.Scheme, parsedURL.Host)
-
-	// Extract endpoint
-	endpoint := parsedURL.Path
-	if endpoint == "" {
-		endpoint = "/"
-	} else if endpoint[0] == '/' {
-		// Remove the first character
-		endpoint = endpoint[1:]
-	}
-
-	return []string{baseURL, endpoint}, nil
 }
 
 // getRandomUserAgent selects a random user agent from the list

@@ -39,6 +39,11 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
 }
 
+func bypassHandler(w http.ResponseWriter, r *http.Request) {
+	data := getSensitiveData(r)
+	fmt.Fprintf(w, "Welcome, admin! Here's your sensitive data: %s", data)
+}
+
 func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	w.WriteHeader(status)
 	if status == http.StatusNotFound {
@@ -83,6 +88,16 @@ func isBypassed(r *http.Request) bool {
 		return true
 	}
 
+	if r.Header.Get("X-Original-URL") == "/admin" {
+		// Agent
+		return true
+	}
+
+	if r.Header.Get("X-Original-URL") == "/admin/secret" {
+		// Agent
+		return true
+	}
+
 	return false
 }
 
@@ -101,6 +116,8 @@ func main() {
 	go func() {
 		http.HandleFunc("/", baseHandler)
 		http.HandleFunc("/admin", adminHandler)
+		http.HandleFunc("/admin/.", bypassHandler)
+		http.HandleFunc("/admin/secret", adminHandler)
 		if err := http.ListenAndServe(":8080", nil); err != nil {
 			fmt.Println("HTTP server error:", err)
 		}

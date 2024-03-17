@@ -16,7 +16,7 @@ func main() {
 	log.Println("Started bypass-403-go")
 
 	// Parse user input
-	url, userSettings := utils.UserInput()
+	userSettings := utils.UserInput()
 
 	// Parse payloads
 	payloads, err := utils.ParsePayloads(&payloadFiles)
@@ -26,38 +26,44 @@ func main() {
 
 	// HTTP Method Attack
 	if payloads["methods.txt"] != nil {
-		utils.HttpMethodAttack(url, payloads["methods.txt"], userSettings)
+		utils.HttpMethodAttack(userSettings, payloads["methods.txt"])
 	}
 
 	// Attacking with headers and ip's
-	if payloads["ip.txt"] != nil && payloads["headers.txt"] != nil {
-		combinedList := utils.CombineLists(payloads["headers.txt"], payloads["ip.txt"])
-		utils.HeaderAttack(url, combinedList, userSettings)
+	if payloads["ip.txt"] != nil && payloads["headers_ip.txt"] != nil {
+		combinedList := utils.CombineLists(payloads["headers_ip.txt"], payloads["ip.txt"])
+		utils.HeaderAttack(userSettings, combinedList)
 	}
 
 	// Appending to the url path
 	if payloads["url_after.txt"] != nil {
-		utils.UrlAfterAttack(url, payloads["url_after.txt"], userSettings)
+		utils.UrlAfterAttack(userSettings, payloads["url_after.txt"])
 	}
 
 	// Prepending to the url path
 	if payloads["url_before.txt"] != nil {
-		utils.UrlBeforeAttack(url, payloads["url_before.txt"], userSettings)
+		utils.UrlBeforeAttack(userSettings, payloads["url_before.txt"])
 	}
 
 	// X forwarded Ports Attack
 	if payloads["ports.txt"] != nil {
-		utils.XForwardedPortsAttack(url, payloads["ports.txt"], userSettings)
+		utils.XForwardedPortsAttack(userSettings, payloads["ports.txt"])
 	}
 
-	// Attacking with other headers
-	if payloads["other_headers.txt"] != nil {
-		utils.HeaderAttack(url, payloads["other_headers.txt"], userSettings)
+	// Attacking with full headers
+	if payloads["headers_full.txt"] != nil {
+		utils.HeaderAttack(userSettings, payloads["headers_full.txt"])
 	}
 
-	// Attacking with user agents
+	// Attacking with user_agents
 	if payloads["user_agents.txt"] != nil {
-		utils.HeaderAttack(url, payloads["user_agents.txt"], userSettings)
+		utils.HeaderAttack(userSettings, payloads["user_agents.txt"])
+	}
+
+	// Attacking with headers path /admin
+	if payloads["headers_path.txt"] != nil {
+		combinedList := utils.CombineLists(payloads["headers_path.txt"], []string{userSettings.Url.Path})
+		utils.HeaderAttack(userSettings, combinedList)
 	}
 
 	log.Println("Finished bypass-403-go")

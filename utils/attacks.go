@@ -3,41 +3,49 @@ package utils
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
-func HttpMethodAttack(url string, methods []string, userSettings UserSettings) {
+func SingleHeaderAttack(userSettings UserSettings, header string, method string) {
+	// Send HTTP request for each method
+	resp, err := HttpRequest(userSettings.Url.String(), method, header, userSettings)
+	if err != nil {
+		log.Printf("failed to create HTTP request: %v", err)
+		return
+	}
+
+	// Handle the HTTP response
+	HandleHTTPResponse(resp, header, userSettings, true)
+}
+
+func HttpMethodAttack(userSettings UserSettings, methods []string) {
 	for _, method := range methods {
 		// Send HTTP request for each method
-		resp, err := HttpRequest(url, method, "", userSettings)
-		if err != nil {
-			return
-		}
-		// Handle the HTTP response
-		HandleHTTPResponse(resp, "", userSettings, false)
-	}
-}
-
-func HeaderAttack(url string, headers []string, userSettings UserSettings) {
-	for _, header := range headers {
-		// Send HTTP request for each method
-		resp, err := HttpRequest(url, "GET", header, userSettings)
+		resp, err := HttpRequest(userSettings.Url.String(), method, "", userSettings)
 		if err != nil {
 			log.Printf("failed to create HTTP request: %v", err)
-			continue
+			return
 		}
-
 		// Handle the HTTP response
-		HandleHTTPResponse(resp, header, userSettings, true)
+		HandleHTTPResponse(resp, "", userSettings, false)
 	}
 }
 
-func UrlAfterAttack(url string, payloadList []string, userSettings UserSettings) {
+func HeaderAttack(userSettings UserSettings, headers []string) {
+	for _, header := range headers {
+		SingleHeaderAttack(userSettings, header, "GET")
+	}
+}
+
+func UrlAfterAttack(userSettings UserSettings, payloadList []string) {
 	// example: https://t.com/admin..;/
 	for _, payload := range payloadList {
-		newUrl := fmt.Sprintf("%s%s", url, payload)
+		newUrl := fmt.Sprintf("%s%s", userSettings.Url.String(), payload)
+
 		// Send HTTP request for each method
 		resp, err := HttpRequest(newUrl, "GET", "", userSettings)
 		if err != nil {
+			log.Printf("failed to create HTTP request: %v", err)
 			return
 		}
 		// Handle the HTTP response
@@ -45,34 +53,29 @@ func UrlAfterAttack(url string, payloadList []string, userSettings UserSettings)
 	}
 }
 
-func UrlBeforeAttack(url string, payloadList []string, userSettings UserSettings) {
+func UrlBeforeAttack(userSettings UserSettings, payloadList []string) {
 	// example: https://t.com/./admin
-	splitUrl, _ := SplitUrl(url)
-
 	for _, payload := range payloadList {
-		newUrl := fmt.Sprintf("%s/%s%s", splitUrl[0], payload, splitUrl[1])
+		hostWithProtocol := userSettings.Url.Scheme + "://" + userSettings.Url.Host
+		pathWithoutSlash := strings.TrimPrefix(userSettings.Url.Path, "/")
+		newUrl := fmt.Sprintf("%s/%s%s", hostWithProtocol, payload, pathWithoutSlash)
 
 		// Send HTTP request for each method
 		resp, err := HttpRequest(newUrl, "GET", "", userSettings)
 		if err != nil {
+			log.Printf("failed to create HTTP request: %v", err)
 			return
 		}
+
 		// Handle the HTTP response
 		HandleHTTPResponse(resp, "", userSettings, false)
 	}
 }
 
-func XForwardedPortsAttack(url string, portsList []string, userSettings UserSettings) {
+func XForwardedPortsAttack(userSettings UserSettings, portsList []string) {
 	// port bypass X-Forwarded-Port: 8080
 	for _, port := range portsList {
 		newHeader := fmt.Sprintf("%s: %s", "X-Forwarded-Port", port)
-
-		// Send HTTP request for each method
-		resp, err := HttpRequest(url, "GET", newHeader, userSettings)
-		if err != nil {
-			return
-		}
-		// Handle the HTTP response
-		HandleHTTPResponse(resp, newHeader, userSettings, true)
+		SingleHeaderAttack(userSettings, newHeader, "GET")
 	}
 }
