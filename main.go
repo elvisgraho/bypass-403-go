@@ -61,7 +61,7 @@ func main() {
 	}
 
 	// Attacking with headers and ip's
-	log.Println("Starting headers_ip + ip attack.")
+	log.Println("Starting the last attack: headers_ip + ip.")
 	if payloads["ip.txt"] != nil && payloads["headers_ip.txt"] != nil {
 		combinedList := utils.CombineLists(payloads["headers_ip.txt"], payloads["ip.txt"])
 		utils.HeaderAttack(userSettings, combinedList)
