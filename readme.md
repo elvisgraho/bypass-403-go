@@ -16,6 +16,7 @@ go install github.com/elvisgraho/bypass-403-go@latest
 * -h: User header (optional), e.g., ```-h 'Cookie: lol'```
 * -hfile: File containing user headers (optional), with one header per line
 * -fs: Suppresses output with the desired size, ```-fs 42```
+* -t: Timeout before making a request, ```-t 50ms```
 
 ### Examples
 
