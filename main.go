@@ -29,12 +29,6 @@ func main() {
 		utils.HttpMethodAttack(userSettings, payloads["methods.txt"])
 	}
 
-	// Attacking with headers and ip's
-	if payloads["ip.txt"] != nil && payloads["headers_ip.txt"] != nil {
-		combinedList := utils.CombineLists(payloads["headers_ip.txt"], payloads["ip.txt"])
-		utils.HeaderAttack(userSettings, combinedList)
-	}
-
 	// Appending to the url path
 	if payloads["url_after.txt"] != nil {
 		utils.UrlAfterAttack(userSettings, payloads["url_after.txt"])
@@ -63,6 +57,13 @@ func main() {
 	// Attacking with headers path /admin
 	if payloads["headers_path.txt"] != nil {
 		combinedList := utils.CombineLists(payloads["headers_path.txt"], []string{userSettings.Url.Path})
+		utils.HeaderAttack(userSettings, combinedList)
+	}
+
+	// Attacking with headers and ip's
+	log.Println("Starting headers_ip + ip attack.")
+	if payloads["ip.txt"] != nil && payloads["headers_ip.txt"] != nil {
+		combinedList := utils.CombineLists(payloads["headers_ip.txt"], payloads["ip.txt"])
 		utils.HeaderAttack(userSettings, combinedList)
 	}
 

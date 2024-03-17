@@ -25,7 +25,11 @@ var userAgents = []string{
 
 func HttpRequest(url, method string, header string, userSettings UserSettings) (*http.Response, error) {
 	// Create a new HTTP client
-	client := &http.Client{}
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 
 	// Create a new request
 	req, err := http.NewRequest(method, url, nil)
@@ -87,6 +91,9 @@ func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSet
 		fmt.Printf("\x1b[31m%d Error. %s %s. %s\x1b[0m\n", resp.StatusCode, resp.Request.Method, resp.Request.URL, additionalOutString)
 		os.Exit(1)
 		defer resp.Body.Close()
+	} else if resp.StatusCode >= 300 && resp.StatusCode < 400 {
+		// print out
+		fmt.Printf("\x1b[33m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
 	} else {
 		// Error response
 		// fmt.Printf("Error performing %s request. Status: %s\n", resp.Request.Method, resp.Status)
