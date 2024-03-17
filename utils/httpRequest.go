@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 // List of user agents
@@ -23,7 +24,7 @@ var userAgents = []string{
 	"Mozilla/5.0 (Linux; Android 10; SM-J810G) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.101 Mobile Safari/537.36",
 }
 
-func HttpRequest(url, method string, header string, userHeaders []string) (*http.Response, error) {
+func HttpRequest(url, method string, header string, userSettings UserSettings) (*http.Response, error) {
 	// Create a new HTTP client
 	client := &http.Client{}
 
@@ -51,7 +52,7 @@ func HttpRequest(url, method string, header string, userHeaders []string) (*http
 	}
 
 	// Set user-defined headers if provided
-	for _, userHeader := range userHeaders {
+	for _, userHeader := range userSettings.UserHeaders {
 		splitHeader := bytes.Split([]byte(userHeader), []byte(":"))
 		if len(splitHeader) != 2 {
 			return nil, fmt.Errorf("invalid header format: %s", userHeader)
@@ -65,14 +66,19 @@ func HttpRequest(url, method string, header string, userHeaders []string) (*http
 		req.Header.Set("User-Agent", userAgent)
 	}
 
+	// wait before request based on user flag
+	if userSettings.Timeout != 0 {
+		time.Sleep(userSettings.Timeout)
+	}
+
 	// Perform the HTTP request
 	return client.Do(req)
 }
 
-func HandleHTTPResponse(resp *http.Response, additionalOutString string, filterSize int, doStop404 bool) {
+func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSettings UserSettings, doStop404 bool) {
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		// Successful response
-		if filterSize != 0 && resp.ContentLength == int64(filterSize) {
+		if userSettings.FilterSize != 0 && resp.ContentLength == int64(userSettings.FilterSize) {
 			// 200, but we filter for the size
 		} else {
 			// print out

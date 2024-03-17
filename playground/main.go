@@ -56,6 +56,8 @@ func getSensitiveData(r *http.Request) string {
 
 // Check for bypass conditions
 func isBypassed(r *http.Request) bool {
+	// mock bypasses to test the implementation
+
 	if r.Method == http.MethodPut {
 		// Bypass if method is not GET
 		return true
@@ -68,6 +70,16 @@ func isBypassed(r *http.Request) bool {
 
 	if r.Header.Get("X-Forwarded-Port") == "8080" {
 		// Bypass if X-Forwarded-Port header points to 8080
+		return true
+	}
+
+	if r.Header.Get("Accept") == "application/json" {
+		// Bypass Accept
+		return true
+	}
+
+	if r.Header.Get("User-Agent") == "Mozilla/5.0 URL-Spider" {
+		// Agent
 		return true
 	}
 

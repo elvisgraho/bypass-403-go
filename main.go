@@ -16,7 +16,7 @@ func main() {
 	log.Println("Started bypass-403-go")
 
 	// Parse user input
-	url, userHeaders, filterSize := utils.UserInput()
+	url, userSettings := utils.UserInput()
 
 	// Parse payloads
 	payloads, err := utils.ParsePayloads(&payloadFiles)
@@ -26,27 +26,38 @@ func main() {
 
 	// HTTP Method Attack
 	if payloads["methods.txt"] != nil {
-		utils.HttpMethodAttack(url, payloads["methods.txt"], userHeaders, filterSize)
+		utils.HttpMethodAttack(url, payloads["methods.txt"], userSettings)
 	}
 
 	// Attacking with headers and ip's
 	if payloads["ip.txt"] != nil && payloads["headers.txt"] != nil {
 		combinedList := utils.CombineLists(payloads["headers.txt"], payloads["ip.txt"])
-		utils.HeaderAttack(url, combinedList, userHeaders, filterSize)
+		utils.HeaderAttack(url, combinedList, userSettings)
 	}
 
 	// Appending to the url path
 	if payloads["url_after.txt"] != nil {
-		utils.UrlAfterAttack(url, payloads["url_after.txt"], userHeaders, filterSize)
+		utils.UrlAfterAttack(url, payloads["url_after.txt"], userSettings)
 	}
 
 	// Prepending to the url path
 	if payloads["url_before.txt"] != nil {
-		utils.UrlBeforeAttack(url, payloads["url_before.txt"], userHeaders, filterSize)
+		utils.UrlBeforeAttack(url, payloads["url_before.txt"], userSettings)
 	}
 
+	// X forwarded Ports Attack
 	if payloads["ports.txt"] != nil {
-		utils.XForwardedPortsAttack(url, payloads["ports.txt"], userHeaders, filterSize)
+		utils.XForwardedPortsAttack(url, payloads["ports.txt"], userSettings)
+	}
+
+	// Attacking with other headers
+	if payloads["other_headers.txt"] != nil {
+		utils.HeaderAttack(url, payloads["other_headers.txt"], userSettings)
+	}
+
+	// Attacking with user agents
+	if payloads["user_agents.txt"] != nil {
+		utils.HeaderAttack(url, payloads["user_agents.txt"], userSettings)
 	}
 
 	log.Println("Finished bypass-403-go")
