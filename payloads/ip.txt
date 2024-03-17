@@ -23,3 +23,6 @@ localhost:443
 localhost:80
 norealhost
 null
+169.254.169.254
+169.254.169.123
+168.63.129.16
