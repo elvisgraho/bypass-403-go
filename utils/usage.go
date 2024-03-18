@@ -7,13 +7,14 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
 
 type UserSettings struct {
-	FilterSize  []string
-	FilterCode  []string
+	FilterSize  []int
+	FilterCode  []int
 	Timeout     time.Duration
 	UserHeader  string
 	UserHeaders []string
@@ -67,12 +68,13 @@ func UserInput() UserSettings {
 	userSettings.Url = *parsedURL
 
 	// parse filters
-	userSettings.FilterSize, err = ParseStringInputSplit(inputFilterSize)
+	userSettings.FilterSize, err = ParseInputStringToInt(inputFilterSize)
 	if err != nil {
 		fmt.Println("Error parsing filter size:", err)
 		os.Exit(1)
 	}
-	userSettings.FilterCode, err = ParseStringInputSplit(inputFilterCode)
+
+	userSettings.FilterCode, err = ParseInputStringToInt(inputFilterCode)
 	if err != nil {
 		fmt.Println("Error parsing filter code:", err)
 		os.Exit(1)
@@ -97,16 +99,25 @@ func PrintUsage() {
 	fmt.Println("  bypass-403-go -u https://example.com/secret -hfile headers.txt -fs 42")
 }
 
-func ParseStringInputSplit(input string) ([]string, error) {
+func ParseInputStringToInt(input string) ([]int, error) {
 	if input == "" {
-		return []string{}, nil
+		return []int{}, nil
 	}
+	var returnInts []int
+
 	splitValues := strings.Split(input, ",")
 	for i, v := range splitValues {
 		splitValues[i] = strings.TrimSpace(v)
 		if splitValues[i] == "" {
 			return nil, errors.New("invalid input format")
 		}
+		intValue, err := strconv.Atoi(v)
+		returnInts = append(returnInts, intValue)
+		if err != nil {
+			fmt.Printf("\x1b[31m %s\x1b[0m\n", err)
+			os.Exit(1)
+		}
 	}
-	return splitValues, nil
+
+	return returnInts, nil
 }

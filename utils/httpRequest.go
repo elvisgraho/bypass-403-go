@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -81,22 +80,14 @@ func HttpRequest(url, method string, header string, userSettings UserSettings) (
 
 func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSettings UserSettings, doStop404 bool) {
 	for _, size := range userSettings.FilterSize {
-		sizeInt, err := strconv.ParseInt(size, 10, 64)
-		if err != nil {
-			fmt.Printf("\x1b[31m %s\x1b[0m\n", err)
-			continue
-		} else if resp.ContentLength == sizeInt {
+		if resp.ContentLength == int64(size) {
 			defer resp.Body.Close()
 			return
 		}
 	}
 
 	for _, code := range userSettings.FilterCode {
-		codeInt, err := strconv.Atoi(code)
-		if err != nil {
-			fmt.Printf("\x1b[31m %s\x1b[0m\n", err)
-			continue
-		} else if resp.StatusCode == codeInt {
+		if resp.StatusCode == code {
 			defer resp.Body.Close()
 			return
 		}
