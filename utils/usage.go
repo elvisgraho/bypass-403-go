@@ -32,7 +32,7 @@ func UserInput() UserSettings {
 	flag.StringVar(&userSettings.UserHeader, "h", "", "User header (optional), specify multiple times")
 	flag.StringVar(&userHeadersFile, "hfile", "", "File containing user headers (optional), one header per line")
 	flag.StringVar(&inputFilterSize, "fs", "", "Filter size (optional). -fs 0,200")
-	flag.StringVar(&inputFilterCode, "fc", "", "Filter size (optional). -fs 307,200")
+	flag.StringVar(&inputFilterCode, "fc", "", "Filter size (optional). -fc 301,307")
 	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout (optional) ex: 50ms")
 
 	// Parse flags
@@ -88,7 +88,8 @@ func PrintUsage() {
 	fmt.Println("  -u <URL>             : Target URL (mandatory), https://example.com/admin")
 	fmt.Println("  -h <header>          : User header (optional), e.g., 'Cookie: ...'")
 	fmt.Println("  -hfile <header_file> : File containing user headers (optional), one header per line")
-	fmt.Println("  -fs int : Supresses output with the desired size.")
+	fmt.Println("  -fs numbers : Supresses output with the desired size.")
+	fmt.Println("  -fc numbers : Supresses output with the desired response code. Ex. -fc 301,307")
 	fmt.Println("  -t  duration : Timeout between requests in. Ex. -t 50ms")
 	fmt.Println("Example:")
 	fmt.Println("  bypass-403-go -u https://example.com/secret -h 'Cookie: lol'")
