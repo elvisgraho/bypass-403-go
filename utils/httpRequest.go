@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -65,7 +66,7 @@ func HttpRequest(url, method string, header string, userSettings UserSettings) (
 
 	if req.Header.Get("User-Agent") == "" {
 		// User-Agent header is not set, set it to the selected user agent
-		userAgent := getRandomUserAgent()
+		userAgent := GetRandomUserAgent()
 		req.Header.Set("User-Agent", userAgent)
 	}
 
@@ -79,31 +80,51 @@ func HttpRequest(url, method string, header string, userSettings UserSettings) (
 }
 
 func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSettings UserSettings, doStop404 bool) {
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		// Successful response
-		if userSettings.FilterSize != 0 && resp.ContentLength == int64(userSettings.FilterSize) {
-			// 200, but we filter for the size
-		} else {
-			// print out
-			fmt.Printf("\x1b[32m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
+	for _, size := range userSettings.FilterSize {
+		sizeInt, err := strconv.ParseInt(size, 10, 64)
+		if err != nil {
+			fmt.Printf("\x1b[31m %s\x1b[0m\n", err)
+			continue
+		} else if resp.ContentLength == sizeInt {
+			defer resp.Body.Close()
+			return
 		}
-	} else if (resp.StatusCode == 404 || resp.StatusCode == 400) && doStop404 {
-		fmt.Printf("\x1b[31m%d Error. %s %s. %s\x1b[0m\n", resp.StatusCode, resp.Request.Method, resp.Request.URL, additionalOutString)
-		os.Exit(1)
-		defer resp.Body.Close()
-	} else if resp.StatusCode >= 300 && resp.StatusCode < 400 {
-		// print out
-		fmt.Printf("\x1b[33m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
-	} else {
-		// Error response
-		// fmt.Printf("Error performing %s request. Status: %s\n", resp.Request.Method, resp.Status)
 	}
 
+	for _, code := range userSettings.FilterCode {
+		codeInt, err := strconv.Atoi(code)
+		if err != nil {
+			fmt.Printf("\x1b[31m %s\x1b[0m\n", err)
+			continue
+		} else if resp.StatusCode == codeInt {
+			defer resp.Body.Close()
+			return
+		}
+	}
+
+	PrintRespInformation(resp, additionalOutString, userSettings, doStop404)
 	// Close the response body
 	defer resp.Body.Close()
 }
 
 // getRandomUserAgent selects a random user agent from the list
-func getRandomUserAgent() string {
+func GetRandomUserAgent() string {
 	return userAgents[rand.Intn(len(userAgents))]
+}
+
+func PrintRespInformation(resp *http.Response, additionalOutString string, userSettings UserSettings, doStop404 bool) {
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		// Successful response
+		fmt.Printf("\x1b[32m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
+	} else if (resp.StatusCode == 404 || resp.StatusCode == 400) && doStop404 {
+		fmt.Printf("\x1b[31m%d Error. %s %s. %s\x1b[0m\n", resp.StatusCode, resp.Request.Method, resp.Request.URL, additionalOutString)
+		os.Exit(1)
+		defer resp.Body.Close()
+	} else if resp.StatusCode >= 300 && resp.StatusCode < 400 {
+		// print out 300 resp
+		fmt.Printf("\x1b[33m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
+	} else {
+		// Error response
+		// fmt.Printf("Error performing %s request. Status: %s\n", resp.Request.Method, resp.Status)
+	}
 }

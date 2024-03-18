@@ -1,16 +1,19 @@
 package utils
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
 type UserSettings struct {
-	FilterSize  int
+	FilterSize  []string
+	FilterCode  []string
 	Timeout     time.Duration
 	UserHeader  string
 	UserHeaders []string
@@ -22,11 +25,14 @@ func UserInput() UserSettings {
 	var inputUrl string
 	var userHeadersFile string
 	var userSettings UserSettings
+	var inputFilterSize string
+	var inputFilterCode string
 
 	flag.StringVar(&inputUrl, "u", "", "Target URL (mandatory)")
 	flag.StringVar(&userSettings.UserHeader, "h", "", "User header (optional), specify multiple times")
 	flag.StringVar(&userHeadersFile, "hfile", "", "File containing user headers (optional), one header per line")
-	flag.IntVar(&userSettings.FilterSize, "fs", 0, "Filter size (optional)")
+	flag.StringVar(&inputFilterSize, "fs", "", "Filter size (optional). -fs 0,200")
+	flag.StringVar(&inputFilterCode, "fc", "", "Filter size (optional). -fs 307,200")
 	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout (optional) ex: 50ms")
 
 	// Parse flags
@@ -58,8 +64,19 @@ func UserInput() UserSettings {
 		fmt.Println("Error parsing URL:", err)
 		os.Exit(1)
 	}
-
 	userSettings.Url = *parsedURL
+
+	// parse filters
+	userSettings.FilterSize, err = ParseStringInputSplit(inputFilterSize)
+	if err != nil {
+		fmt.Println("Error parsing filter size:", err)
+		os.Exit(1)
+	}
+	userSettings.FilterCode, err = ParseStringInputSplit(inputFilterCode)
+	if err != nil {
+		fmt.Println("Error parsing filter code:", err)
+		os.Exit(1)
+	}
 
 	return userSettings
 }
@@ -77,4 +94,18 @@ func PrintUsage() {
 	fmt.Println("  bypass-403-go -u https://example.com/secret -h 'Cookie: lol'")
 	fmt.Println("  bypass-403-go -u https://example.com/secret -hfile headers.txt")
 	fmt.Println("  bypass-403-go -u https://example.com/secret -hfile headers.txt -fs 42")
+}
+
+func ParseStringInputSplit(input string) ([]string, error) {
+	if input == "" {
+		return []string{}, nil
+	}
+	splitValues := strings.Split(input, ",")
+	for i, v := range splitValues {
+		splitValues[i] = strings.TrimSpace(v)
+		if splitValues[i] == "" {
+			return nil, errors.New("invalid input format")
+		}
+	}
+	return splitValues, nil
 }

