@@ -3,10 +3,13 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
-	"os"
+	"strings"
 	"time"
+
+	"golang.org/x/net/html"
 )
 
 // List of user agents
@@ -78,7 +81,7 @@ func HttpRequest(url, method string, header string, userSettings UserSettings) (
 	return client.Do(req)
 }
 
-func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSettings UserSettings, doStop404 bool) {
+func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSettings UserSettings) {
 	for _, size := range userSettings.FilterSize {
 		if resp.ContentLength == int64(size) {
 			defer resp.Body.Close()
@@ -93,7 +96,7 @@ func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSet
 		}
 	}
 
-	PrintRespInformation(resp, additionalOutString, userSettings, doStop404)
+	PrintRespInformation(resp, additionalOutString, userSettings)
 	// Close the response body
 	defer resp.Body.Close()
 }
@@ -103,14 +106,22 @@ func GetRandomUserAgent() string {
 	return userAgents[rand.Intn(len(userAgents))]
 }
 
-func PrintRespInformation(resp *http.Response, additionalOutString string, userSettings UserSettings, doStop404 bool) {
+func PrintRespInformation(resp *http.Response, additionalOutString string, userSettings UserSettings) {
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		// Successful response
 		fmt.Printf("\x1b[32m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
-	} else if (resp.StatusCode == 404 || resp.StatusCode == 400) && doStop404 {
-		fmt.Printf("\x1b[31m%d Error. %s %s. %s\x1b[0m\n", resp.StatusCode, resp.Request.Method, resp.Request.URL, additionalOutString)
-		os.Exit(1)
-		defer resp.Body.Close()
+	} else if (resp.StatusCode >= 400 || resp.StatusCode < 500) && userSettings.DoShow400 {
+		fmt.Printf("\x1b[31m%d Error. Length: %d. %s %s %s\x1b[0m\n", resp.StatusCode, resp.ContentLength, resp.Request.Method, resp.Request.URL, additionalOutString)
+		// try to read body
+		body, err := io.ReadAll(resp.Body)
+		if err == nil {
+			title := FindTitle(body)
+			if title != "" {
+				fmt.Printf("<title>%s</title>\n", title)
+				return
+			}
+			fmt.Printf("%s\n", body)
+		}
 	} else if resp.StatusCode >= 300 && resp.StatusCode < 400 {
 		// print out 300 resp
 		fmt.Printf("\x1b[33m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
@@ -118,4 +129,27 @@ func PrintRespInformation(resp *http.Response, additionalOutString string, userS
 		// Error response
 		// fmt.Printf("Error performing %s request. Status: %s\n", resp.Request.Method, resp.Status)
 	}
+}
+
+func FindTitle(body []byte) string {
+	doc, err := html.Parse(strings.NewReader(string(body)))
+	if err != nil {
+		fmt.Println("Error parsing HTML:", err)
+		return ""
+	}
+
+	return findTitle(doc)
+}
+
+func findTitle(n *html.Node) string {
+	if n.Type == html.ElementNode && n.Data == "title" {
+		return n.FirstChild.Data
+	}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		title := findTitle(c)
+		if title != "" {
+			return title
+		}
+	}
+	return ""
 }

@@ -13,12 +13,14 @@ import (
 )
 
 type UserSettings struct {
-	FilterSize  []int
-	FilterCode  []int
-	Timeout     time.Duration
-	UserHeader  string
-	UserHeaders []string
-	Url         url.URL
+	FilterSize       []int
+	FilterCode       []int
+	Timeout          time.Duration
+	UserHeader       string
+	UserHeaders      []string
+	Url              url.URL
+	DoSkipUrlAttacks bool
+	DoShow400        bool
 }
 
 func UserInput() UserSettings {
@@ -30,11 +32,13 @@ func UserInput() UserSettings {
 	var inputFilterCode string
 
 	flag.StringVar(&inputUrl, "u", "", "Target URL (mandatory)")
-	flag.StringVar(&userSettings.UserHeader, "h", "", "User header (optional), specify multiple times")
-	flag.StringVar(&userHeadersFile, "hfile", "", "File containing user headers (optional), one header per line")
-	flag.StringVar(&inputFilterSize, "fs", "", "Filter size (optional). -fs 0,200")
-	flag.StringVar(&inputFilterCode, "fc", "", "Filter size (optional). -fc 301,307")
-	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout (optional) ex: 50ms")
+	flag.StringVar(&userSettings.UserHeader, "h", "", "User header, specify multiple times")
+	flag.StringVar(&userHeadersFile, "hfile", "", "File containing user headers, one header per line")
+	flag.StringVar(&inputFilterSize, "fs", "", "Filter size. -fs 0,200")
+	flag.StringVar(&inputFilterCode, "fc", "", "Filter size. -fc 301,307")
+	flag.BoolVar(&userSettings.DoSkipUrlAttacks, "skipUrl", false, "Skip attacks that change url.")
+	flag.BoolVar(&userSettings.DoShow400, "show400", false, "Show all 400 errors.")
+	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout ex: 50ms")
 
 	// Parse flags
 	flag.Parse()
@@ -88,10 +92,12 @@ func PrintUsage() {
 	fmt.Println("Usage: bypass-403-go -u <URL> [-h <header>] [-hfile <header_file>]")
 	fmt.Println("Flags:")
 	fmt.Println("  -u <URL>             : Target URL (mandatory), https://example.com/admin")
-	fmt.Println("  -h <header>          : User header (optional), e.g., 'Cookie: ...'")
-	fmt.Println("  -hfile <header_file> : File containing user headers (optional), one header per line")
-	fmt.Println("  -fs numbers : Supresses output with the desired size.")
-	fmt.Println("  -fc numbers : Supresses output with the desired response code. Ex. -fc 301,307")
+	fmt.Println("  -h <header>          : User header, e.g., 'Cookie: ...'")
+	fmt.Println("  -hfile <header_file> : File containing user headers, one header per line")
+	fmt.Println("  -fs numbers  : Supresses output with the desired size.")
+	fmt.Println("  -fc numbers  : Supresses output with the desired response code. Ex. -fc 301,307")
+	fmt.Println("  -skipUrl     : Skip attacks that change url.")
+	fmt.Println("  -show400     : Show all 400 errors .")
 	fmt.Println("  -t  duration : Timeout between requests in. Ex. -t 50ms")
 	fmt.Println("Example:")
 	fmt.Println("  bypass-403-go -u https://example.com/secret -h 'Cookie: lol'")

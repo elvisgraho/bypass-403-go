@@ -30,12 +30,12 @@ func main() {
 	}
 
 	// Appending to the url path
-	if payloads["url_after.txt"] != nil {
+	if !userSettings.DoSkipUrlAttacks && payloads["url_after.txt"] != nil {
 		utils.UrlAfterAttack(userSettings, payloads["url_after.txt"])
 	}
 
 	// Prepending to the url path
-	if payloads["url_before.txt"] != nil {
+	if !userSettings.DoSkipUrlAttacks && payloads["url_before.txt"] != nil {
 		utils.UrlBeforeAttack(userSettings, payloads["url_before.txt"])
 	}
 
