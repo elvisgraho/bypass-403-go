@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"io"
 	"math/rand"
@@ -29,6 +30,11 @@ var userAgents = []string{
 func HttpRequest(url, method string, header string, userSettings UserSettings) (*http.Response, error) {
 	// Create a new HTTP client
 	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true, // Ignore certificate errors
+			},
+		},
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
