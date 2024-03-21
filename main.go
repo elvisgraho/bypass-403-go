@@ -25,7 +25,7 @@ func main() {
 	}
 
 	// HTTP Method Attack
-	if payloads["methods.txt"] != nil {
+	if !userSettings.DoSkipMethodsAttack && payloads["methods.txt"] != nil {
 		utils.HttpMethodAttack(userSettings, payloads["methods.txt"])
 	}
 

@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 	"log"
+	"net"
+	"os"
 	"strings"
 )
 
@@ -10,7 +12,7 @@ func SingleHeaderAttack(userSettings UserSettings, header string, method string)
 	// Send HTTP request for each method
 	resp, err := HttpRequest(userSettings.Url.String(), method, header, userSettings)
 	if err != nil {
-		log.Printf("failed to create HTTP request: %v", err)
+		AttackHttpErrorHandling(err)
 		return
 	}
 
@@ -23,7 +25,7 @@ func HttpMethodAttack(userSettings UserSettings, methods []string) {
 		// Send HTTP request for each method
 		resp, err := HttpRequest(userSettings.Url.String(), method, "", userSettings)
 		if err != nil {
-			log.Printf("failed to create HTTP request: %v", err)
+			AttackHttpErrorHandling(err)
 			return
 		}
 		// Handle the HTTP response
@@ -45,7 +47,7 @@ func UrlAfterAttack(userSettings UserSettings, payloadList []string) {
 		// Send HTTP request for each method
 		resp, err := HttpRequest(newUrl, "GET", "", userSettings)
 		if err != nil {
-			log.Printf("failed to create HTTP request: %v", err)
+			AttackHttpErrorHandling(err)
 			return
 		}
 		// Handle the HTTP response
@@ -63,7 +65,7 @@ func UrlBeforeAttack(userSettings UserSettings, payloadList []string) {
 		// Send HTTP request for each method
 		resp, err := HttpRequest(newUrl, "GET", "", userSettings)
 		if err != nil {
-			log.Printf("failed to create HTTP request: %v", err)
+			AttackHttpErrorHandling(err)
 			return
 		}
 
@@ -77,5 +79,12 @@ func XForwardedPortsAttack(userSettings UserSettings, portsList []string) {
 	for _, port := range portsList {
 		newHeader := fmt.Sprintf("%s: %s", "X-Forwarded-Port", port)
 		SingleHeaderAttack(userSettings, newHeader, "GET")
+	}
+}
+
+func AttackHttpErrorHandling(err error) {
+	log.Printf("failed to create HTTP request: %v", err)
+	if dnsErr, ok := err.(*net.DNSError); ok && dnsErr.IsNotFound {
+		os.Exit(1)
 	}
 }

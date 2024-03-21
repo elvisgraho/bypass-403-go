@@ -13,14 +13,15 @@ import (
 )
 
 type UserSettings struct {
-	FilterSize       []int
-	FilterCode       []int
-	Timeout          time.Duration
-	UserHeader       string
-	UserHeaders      []string
-	Url              url.URL
-	DoSkipUrlAttacks bool
-	DoShow400        bool
+	FilterSize          []int
+	FilterCode          []int
+	Timeout             time.Duration
+	UserHeader          string
+	UserHeaders         []string
+	Url                 url.URL
+	DoSkipUrlAttacks    bool
+	DoSkipMethodsAttack bool
+	DoShow400           bool
 }
 
 func UserInput() UserSettings {
@@ -37,6 +38,7 @@ func UserInput() UserSettings {
 	flag.StringVar(&inputFilterSize, "fs", "", "Filter size. -fs 0,200")
 	flag.StringVar(&inputFilterCode, "fc", "", "Filter size. -fc 301,307")
 	flag.BoolVar(&userSettings.DoSkipUrlAttacks, "skipUrl", false, "Skip attacks that change url.")
+	flag.BoolVar(&userSettings.DoSkipMethodsAttack, "skipMethod", false, "Skip attacks that change request method.")
 	flag.BoolVar(&userSettings.DoShow400, "show400", false, "Show all 400 errors.")
 	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout ex: 50ms")
 
@@ -97,6 +99,7 @@ func PrintUsage() {
 	fmt.Println("  -fs numbers  : Supresses output with the desired size.")
 	fmt.Println("  -fc numbers  : Supresses output with the desired response code. Ex. -fc 301,307")
 	fmt.Println("  -skipUrl     : Skip attacks that change url.")
+	fmt.Println("  -skipMethod     : Skip attacks that change request method.")
 	fmt.Println("  -show400     : Show all 400 errors .")
 	fmt.Println("  -t  duration : Timeout between requests in. Ex. -t 50ms")
 	fmt.Println("Example:")

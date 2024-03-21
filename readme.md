@@ -12,14 +12,17 @@ go install github.com/elvisgraho/bypass-403-go@latest
 
 ### Flags
 
-* -u: Target URL (mandatory), e.g., ```-u https://example.com/admin```
-* -h: User header, e.g., ```-h 'Cookie: lol'```
-* -hfile: File containing user headers, with one header per line
-* -fs: Suppresses output with the desired size, ```-fs 42,205```
-* -fc: Suppresses output with the desired response code, ```-fc 307```
-* -skipUrl: Skip attacks that change url.
-* -show400: Show all 400 errors.
-* -t: Timeout before making a request, ```-t 50ms```
+| Option      | Description                                    |
+|-------------|------------------------------------------------|
+| -**u**          | Target URL (mandatory), e.g., `-u https://example.com/admin` |
+| -**h**          | User header, e.g., `-h 'Cookie: lol'`          |
+| -**hfile**      | File containing user headers, with one header per line |
+| -**fs**         | Suppresses output with the desired size, `-fs 42,205` |
+| -**fc**         | Suppresses output with the desired response code, `-fc 307` |
+| -**skipUrl**    | Skip attacks that change url.                  |
+| -**skipMethod** | Skip attacks that change request method.       |
+| -**show400**    | Show all 400 errors.                           |
+| -**t**          | Timeout before making a request, `-t 50ms`     |
 
 ### Examples
 
