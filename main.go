@@ -50,7 +50,7 @@ func main() {
 	}
 
 	// Attacking with user_agents
-	if payloads["user_agents.txt"] != nil {
+	if !userSettings.DoSkipAgentAttacks && payloads["user_agents.txt"] != nil {
 		utils.HeaderAttack(userSettings, payloads["user_agents.txt"])
 	}
 

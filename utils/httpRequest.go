@@ -115,28 +115,55 @@ func GetRandomUserAgent() string {
 }
 
 func PrintRespInformation(resp *http.Response, additionalOutString string, userSettings UserSettings) {
+	var stringToPrint string
+
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		// Successful response
-		fmt.Printf("\x1b[32m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
+		stringToPrint = fmt.Sprintf("\x1b[32m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
 	} else if (resp.StatusCode >= 400 || resp.StatusCode < 500) && userSettings.DoShow400 {
-		fmt.Printf("\x1b[31m%d Error. Length: %d. %s %s %s\x1b[0m\n", resp.StatusCode, resp.ContentLength, resp.Request.Method, resp.Request.URL, additionalOutString)
 		// try to read body
-		body, err := io.ReadAll(resp.Body)
-		if err == nil {
-			title := FindTitle(body)
-			if title != "" {
-				fmt.Printf("<title>%s</title>\n", title)
-				return
-			}
-			fmt.Printf("%s\n", body)
-		}
+		stringToPrint = fmt.Sprintf("\x1b[31m%d Error. Length: %d. %s %s %s\x1b[0m\n", resp.StatusCode, resp.ContentLength, resp.Request.Method, resp.Request.URL, additionalOutString)
 	} else if resp.StatusCode >= 300 && resp.StatusCode < 400 {
 		// print out 300 resp
-		fmt.Printf("\x1b[33m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
+		stringToPrint = fmt.Sprintf("\x1b[33m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
 	} else {
 		// Error response
 		// fmt.Printf("Error performing %s request. Status: %s\n", resp.Request.Method, resp.Status)
 	}
+
+	PrintRespHtml(resp, userSettings, stringToPrint)
+}
+
+func PrintRespHtml(resp *http.Response, userSettings UserSettings, stringToPrint string) {
+	// try to read body
+	body, err := io.ReadAll(resp.Body)
+	if err == nil {
+		var bodyString string
+		if len(body) > 0 {
+			bodyString = string(body)
+		} else {
+			fmt.Print(stringToPrint)
+			return
+		}
+
+		// user filters out this string
+		if userSettings.FilterRespString != "" && strings.Contains(bodyString, userSettings.FilterRespString) {
+			// user filtered this out
+			return
+		}
+
+		// print resposne before the body/title
+		fmt.Print(stringToPrint)
+
+		// try to grab only title if possible
+		title := FindTitle(body)
+		if title != "" {
+			fmt.Printf("<title>%s</title>\n", title)
+		} else if len(body) > 0 {
+			fmt.Printf("%s\n", body)
+		}
+	}
+
 }
 
 func FindTitle(body []byte) string {

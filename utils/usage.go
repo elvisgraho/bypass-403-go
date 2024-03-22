@@ -15,12 +15,14 @@ import (
 type UserSettings struct {
 	FilterSize          []int
 	FilterCode          []int
+	FilterRespString    string
 	Timeout             time.Duration
 	UserHeader          string
 	UserHeaders         []string
 	Url                 url.URL
 	DoSkipUrlAttacks    bool
 	DoSkipMethodsAttack bool
+	DoSkipAgentAttacks  bool
 	DoShow400           bool
 }
 
@@ -35,10 +37,12 @@ func UserInput() UserSettings {
 	flag.StringVar(&inputUrl, "u", "", "Target URL (mandatory)")
 	flag.StringVar(&userSettings.UserHeader, "h", "", "User header, specify multiple times")
 	flag.StringVar(&userHeadersFile, "hfile", "", "File containing user headers, one header per line")
-	flag.StringVar(&inputFilterSize, "fs", "", "Filter size. -fs 0,200")
-	flag.StringVar(&inputFilterCode, "fc", "", "Filter size. -fc 301,307")
+	flag.StringVar(&inputFilterSize, "fs", "", "Filter response content length. -fs 0,200")
+	flag.StringVar(&inputFilterCode, "fc", "", "Filter response code. -fc 301,307")
+	flag.StringVar(&userSettings.FilterRespString, "fr", "", "Filter specific message in the response")
 	flag.BoolVar(&userSettings.DoSkipUrlAttacks, "skipUrl", false, "Skip attacks that change url.")
 	flag.BoolVar(&userSettings.DoSkipMethodsAttack, "skipMethod", false, "Skip attacks that change request method.")
+	flag.BoolVar(&userSettings.DoSkipAgentAttacks, "skipAgent", false, "Skip attacks that change Agent header.")
 	flag.BoolVar(&userSettings.DoShow400, "show400", false, "Show all 400 errors.")
 	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout ex: 50ms")
 
@@ -75,22 +79,19 @@ func UserInput() UserSettings {
 	// parse url
 	parsedURL, err := url.Parse(inputUrl)
 	if err != nil {
-		fmt.Println("Error parsing URL:", err)
-		os.Exit(1)
+		log.Fatal("Error parsing URL:", err)
 	}
 	userSettings.Url = *parsedURL
 
 	// parse filters
 	userSettings.FilterSize, err = ParseInputStringToInt(inputFilterSize)
 	if err != nil {
-		fmt.Println("Error parsing filter size:", err)
-		os.Exit(1)
+		log.Fatal("Error parsing filter size:", err)
 	}
 
 	userSettings.FilterCode, err = ParseInputStringToInt(inputFilterCode)
 	if err != nil {
-		fmt.Println("Error parsing filter code:", err)
-		os.Exit(1)
+		log.Fatal("Error parsing filter code:", err)
 	}
 
 	return userSettings
@@ -103,10 +104,12 @@ func PrintUsage() {
 	fmt.Println("  -u <URL>             : Target URL (mandatory), https://example.com/admin")
 	fmt.Println("  -h <header>          : User header, e.g., 'Cookie: ...'")
 	fmt.Println("  -hfile <header_file> : File containing user headers, one header per line")
-	fmt.Println("  -fs numbers  : Supresses output with the desired size.")
+	fmt.Println("  -fs numbers  : Supresses output with the desired content length.")
 	fmt.Println("  -fc numbers  : Supresses output with the desired response code. Ex. -fc 301,307")
+	fmt.Println("  -fr string   : Supresses output with the desired response. Ex. -fr \"Request unsuccessful.\"")
 	fmt.Println("  -skipUrl     : Skip attacks that change url.")
 	fmt.Println("  -skipMethod  : Skip attacks that change request method.")
+	fmt.Println("  -skipAgent   : Skip attacks that change Agent header.")
 	fmt.Println("  -show400     : Show all 400 errors .")
 	fmt.Println("  -t  duration : Timeout between requests in. Ex. -t 50ms")
 	fmt.Println("Example:")
