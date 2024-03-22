@@ -131,7 +131,10 @@ func PrintRespInformation(resp *http.Response, additionalOutString string, userS
 		// fmt.Printf("Error performing %s request. Status: %s\n", resp.Request.Method, resp.Status)
 	}
 
-	PrintRespHtml(resp, userSettings, stringToPrint)
+	if stringToPrint != "" {
+		PrintRespHtml(resp, userSettings, stringToPrint)
+	}
+
 }
 
 func PrintRespHtml(resp *http.Response, userSettings UserSettings, stringToPrint string) {
