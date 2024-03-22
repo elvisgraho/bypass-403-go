@@ -63,13 +63,15 @@ func HttpRequest(url, method string, header string, userSettings UserSettings) (
 		req.Header.Set(string(headerName), string(headerValue))
 	}
 
-	// Set user-defined headers if provided
+	// Set user defined headers if provided
 	for _, userHeader := range userSettings.UserHeaders {
-		splitHeader := bytes.Split([]byte(userHeader), []byte(":"))
+		splitHeader := strings.SplitN(userHeader, ":", 2)
 		if len(splitHeader) != 2 {
 			return nil, fmt.Errorf("invalid header format: %s", userHeader)
 		}
-		req.Header.Set(string(bytes.TrimSpace(splitHeader[0])), string(bytes.TrimSpace(splitHeader[1])))
+		key := strings.TrimSpace(splitHeader[0])
+		value := strings.TrimSpace(splitHeader[1])
+		req.Header.Set(key, value)
 	}
 
 	if req.Header.Get("User-Agent") == "" {

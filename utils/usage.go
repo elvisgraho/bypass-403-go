@@ -43,7 +43,14 @@ func UserInput() UserSettings {
 	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout ex: 50ms")
 
 	// Parse flags
-	flag.Parse()
+	err := flag.CommandLine.Parse(os.Args[1:])
+
+	// Check for errors in flag parsing
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		PrintUsage()
+		os.Exit(1)
+	}
 
 	// Check if mandatory flag is provided
 	if inputUrl == "" || len(os.Args) == 1 {
@@ -99,7 +106,7 @@ func PrintUsage() {
 	fmt.Println("  -fs numbers  : Supresses output with the desired size.")
 	fmt.Println("  -fc numbers  : Supresses output with the desired response code. Ex. -fc 301,307")
 	fmt.Println("  -skipUrl     : Skip attacks that change url.")
-	fmt.Println("  -skipMethod     : Skip attacks that change request method.")
+	fmt.Println("  -skipMethod  : Skip attacks that change request method.")
 	fmt.Println("  -show400     : Show all 400 errors .")
 	fmt.Println("  -t  duration : Timeout between requests in. Ex. -t 50ms")
 	fmt.Println("Example:")
