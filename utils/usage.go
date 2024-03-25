@@ -35,16 +35,16 @@ func UserInput() UserSettings {
 	var inputFilterCode string
 
 	flag.StringVar(&inputUrl, "u", "", "Target URL (mandatory)")
-	flag.StringVar(&userSettings.UserHeader, "h", "", "User header, specify multiple times")
-	flag.StringVar(&userHeadersFile, "hfile", "", "File containing user headers, one header per line")
-	flag.StringVar(&inputFilterSize, "fs", "", "Filter response content length. -fs 0,200")
-	flag.StringVar(&inputFilterCode, "fc", "", "Filter response code. -fc 301,307")
-	flag.StringVar(&userSettings.FilterRespString, "fr", "", "Filter specific message in the response")
+	flag.StringVar(&userSettings.UserHeader, "h", "", "User header ex: \"Cookie: test\"")
+	flag.StringVar(&userHeadersFile, "hfile", "", "File containing user headers, one header per line.")
+	flag.StringVar(&inputFilterSize, "fs", "", "Filter response content length. -fs 0,200.")
+	flag.StringVar(&inputFilterCode, "fc", "", "Filter response code. -fc 301,307.")
+	flag.StringVar(&userSettings.FilterRespString, "fr", "", "Filter specific message in the response.")
 	flag.BoolVar(&userSettings.DoSkipUrlAttacks, "skipUrl", false, "Skip attacks that change url.")
 	flag.BoolVar(&userSettings.DoSkipMethodsAttack, "skipMethod", false, "Skip attacks that change request method.")
 	flag.BoolVar(&userSettings.DoSkipAgentAttacks, "skipAgent", false, "Skip attacks that change Agent header.")
 	flag.BoolVar(&userSettings.DoShow400, "show400", false, "Show all 400 errors.")
-	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout ex: 50ms")
+	flag.DurationVar(&userSettings.Timeout, "t", 0, "Timeout ex: 50ms.")
 
 	// Parse flags
 	err := flag.CommandLine.Parse(os.Args[1:])

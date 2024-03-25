@@ -32,7 +32,7 @@ func ReadHeadersFromFile(filename string) ([]string, error) {
 
 func ParsePayloads(payloadFiles *embed.FS) (map[string][]string, error) {
 	// List all files in the payloads directory
-	files, err := os.ReadDir("payloads")
+	files, err := payloadFiles.ReadDir("payloads")
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func ParsePayloads(payloadFiles *embed.FS) (map[string][]string, error) {
 		filePath := fmt.Sprintf("payloads/%s", filename)
 
 		// Open the file
-		f, err := os.Open(filePath)
+		f, err := payloadFiles.Open(filePath)
 		if err != nil {
 			return nil, err
 		}
