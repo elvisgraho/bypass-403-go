@@ -110,7 +110,7 @@ func PrintUsage() {
 	fmt.Println("  -skipUrl     : Skip attacks that change url.")
 	fmt.Println("  -skipMethod  : Skip attacks that change request method.")
 	fmt.Println("  -skipAgent   : Skip attacks that change Agent header.")
-	fmt.Println("  -show400     : Show all 400 errors .")
+	fmt.Println("  -show400     : Show all 400 errors.")
 	fmt.Println("  -t  duration : Timeout between requests in. Ex. -t 50ms")
 	fmt.Println("Example:")
 	fmt.Println("  bypass-403-go -u https://example.com/secret -h 'Cookie: lol'")

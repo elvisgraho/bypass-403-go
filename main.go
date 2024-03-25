@@ -7,7 +7,7 @@ import (
 	"github.com/elvisgraho/bypass-403-go/utils"
 )
 
-//go:embed payloads/*.txt
+//go:embed all:payloads
 var payloadFiles embed.FS
 
 func main() {

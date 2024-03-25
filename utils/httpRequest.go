@@ -163,7 +163,11 @@ func PrintRespHtml(resp *http.Response, userSettings UserSettings, stringToPrint
 		if title != "" {
 			fmt.Printf("<title>%s</title>\n", title)
 		} else if len(body) > 0 {
-			fmt.Printf("%s\n", body)
+			if len(body) > 150 {
+				fmt.Printf("%s...\n", body[:150])
+			} else {
+				fmt.Printf("%s\n", body)
+			}
 		}
 	}
 
