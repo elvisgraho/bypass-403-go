@@ -10,7 +10,6 @@ Forwarded-For
 Forwarded-Host
 Forwarded
 Host
-Host abcd
 Http-Url
 Origin
 Profile
@@ -29,18 +28,14 @@ X-Arbitrary
 X-Client-IP
 X-Custom-IP-Authorization
 X-Forward-For
-X-Forward-For abcd
 X-Forward
-X-Forward abcd
 X-Forwarded-By
 X-Forwarded-For-Original
 X-Forwarded-For
-X-Forwarded-For abcd
 X-Forwarded-Host
 X-Forwarded-Proto
 X-Forwarded-Server
 X-Forwarded
-X-Forwarded abcd
 X-Forwarder-For
 X-Host
 X-HTTP-DestinationURL
