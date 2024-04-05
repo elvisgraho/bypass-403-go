@@ -29,14 +29,14 @@ func main() {
 		utils.HttpMethodAttack(userSettings, payloads["methods.txt"])
 	}
 
-	// Appending to the url path
-	if !userSettings.DoSkipUrlAttacks && payloads["url_after.txt"] != nil {
-		utils.UrlAfterAttack(userSettings, payloads["url_after.txt"])
-	}
-
 	// Prepending to the url path
 	if !userSettings.DoSkipUrlAttacks && payloads["url_before.txt"] != nil {
 		utils.UrlBeforeAttack(userSettings, payloads["url_before.txt"])
+	}
+
+	// Appending to the url path
+	if !userSettings.DoSkipUrlAttacks && payloads["url_after.txt"] != nil {
+		utils.UrlAfterAttack(userSettings, payloads["url_after.txt"])
 	}
 
 	// X forwarded Ports Attack

@@ -13,6 +13,8 @@ import (
 	"golang.org/x/net/html"
 )
 
+// todo 401 and 403 discrepancy implementation
+
 // List of user agents
 var userAgents = []string{
 	"Mozilla/5.0 (Linux; Android 10; BLA-L29) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36 EdgA/45.06.4.5043",

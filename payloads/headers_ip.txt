@@ -43,6 +43,7 @@ X-HTTP-Host-Override
 X-Original-Remote-Addr
 X-Originally-Forwarded-For
 X-Originating-IP
+x-forwarded-for
 X-Proxy-Url
 X-ProxyUser-Ip
 X-Real-Ip

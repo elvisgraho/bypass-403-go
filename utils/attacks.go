@@ -57,20 +57,25 @@ func UrlAfterAttack(userSettings UserSettings, payloadList []string) {
 
 func UrlBeforeAttack(userSettings UserSettings, payloadList []string) {
 	// example: https://t.com/./admin
+	pathParts := strings.Split(userSettings.Url.Path, "/")
+	hostWithProtocol := userSettings.Url.Scheme + "://" + userSettings.Url.Host
+
+	fmt.Println(pathParts)
+
 	for _, payload := range payloadList {
-		hostWithProtocol := userSettings.Url.Scheme + "://" + userSettings.Url.Host
-		pathWithoutSlash := strings.TrimPrefix(userSettings.Url.Path, "/")
-		newUrl := fmt.Sprintf("%s/%s%s", hostWithProtocol, payload, pathWithoutSlash)
+		modifiedPaths := insertPayloadInsidePath(userSettings.Url.Path, payload)
+		for _, pathPayload := range modifiedPaths {
+			newUrl := fmt.Sprintf("%s%s", hostWithProtocol, pathPayload)
+			// Send HTTP request for each method
+			resp, err := HttpRequest(newUrl, "GET", "", userSettings)
+			if err != nil {
+				AttackHttpErrorHandling(err)
+				return
+			}
 
-		// Send HTTP request for each method
-		resp, err := HttpRequest(newUrl, "GET", "", userSettings)
-		if err != nil {
-			AttackHttpErrorHandling(err)
-			return
+			// Handle the HTTP response
+			HandleHTTPResponse(resp, "", userSettings)
 		}
-
-		// Handle the HTTP response
-		HandleHTTPResponse(resp, "", userSettings)
 	}
 }
 
@@ -87,4 +92,17 @@ func AttackHttpErrorHandling(err error) {
 	if dnsErr, ok := err.(*net.DNSError); ok && dnsErr.IsNotFound {
 		os.Exit(1)
 	}
+}
+
+func insertPayloadInsidePath(path string, payload string) (modifiedPaths []string) {
+	pathParts := strings.Split(path, "/")
+
+	for i := 1; i < len(pathParts); i++ {
+		leftPath := strings.Join(pathParts[:i], "/")
+		rightPath := strings.Join(pathParts[i:], "/")
+		modifiedPath := leftPath + "/" + payload + rightPath
+		modifiedPaths = append(modifiedPaths, modifiedPath)
+	}
+
+	return modifiedPaths
 }
