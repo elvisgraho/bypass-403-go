@@ -57,10 +57,7 @@ func UrlAfterAttack(userSettings UserSettings, payloadList []string) {
 
 func UrlBeforeAttack(userSettings UserSettings, payloadList []string) {
 	// example: https://t.com/./admin
-	pathParts := strings.Split(userSettings.Url.Path, "/")
 	hostWithProtocol := userSettings.Url.Scheme + "://" + userSettings.Url.Host
-
-	fmt.Println(pathParts)
 
 	for _, payload := range payloadList {
 		modifiedPaths := insertPayloadInsidePath(userSettings.Url.Path, payload)
@@ -88,7 +85,11 @@ func XForwardedPortsAttack(userSettings UserSettings, portsList []string) {
 }
 
 func AttackHttpErrorHandling(err error) {
-	log.Printf("failed to create HTTP request: %v", err)
+	// if strings.Contains(err.Error(), "An existing connection was forcibly closed by the remote host") {
+	// 	return
+	// }
+
+	log.Printf("Failed to create HTTP request: %v", err)
 	if dnsErr, ok := err.(*net.DNSError); ok && dnsErr.IsNotFound {
 		os.Exit(1)
 	}

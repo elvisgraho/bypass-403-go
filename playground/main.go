@@ -10,6 +10,7 @@ import (
 )
 
 func baseHandler(w http.ResponseWriter, r *http.Request) {
+	// todo, secondary context / traverse mock
 	if r.URL.Path != "/" {
 		errorHandler(w, r, http.StatusNotFound)
 		return
@@ -33,6 +34,12 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		// Cookie header is not set, print the sensitive data
 		data := getSensitiveData(r)
 		fmt.Fprintf(w, "Welcome, admin! Here's your sensitive data: %s", data)
+		return
+	}
+
+	if r.Header.Get("X-Forward-For") == "192.168.100.100" {
+		// handle different error lengths
+		http.Error(w, "You are not allowed!", http.StatusUnauthorized)
 		return
 	}
 

@@ -13,7 +13,14 @@ import (
 	"golang.org/x/net/html"
 )
 
-// todo 401 and 403 discrepancy implementation
+type RespMemory struct {
+	respCode       int
+	respLength     int
+	occurenceCount int
+	requests       []string
+}
+
+var RespMemoryStore = map[int][]RespMemory{}
 
 // List of user agents
 var userAgents = []string{
@@ -87,11 +94,14 @@ func HttpRequest(url, method string, header string, userSettings UserSettings) (
 		time.Sleep(userSettings.Timeout)
 	}
 
+	req.Close = true
 	// Perform the HTTP request
 	return client.Do(req)
 }
 
 func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSettings UserSettings) {
+	writeRespMemory(resp)
+
 	for _, size := range userSettings.FilterSize {
 		if resp.ContentLength == int64(size) {
 			defer resp.Body.Close()
@@ -196,4 +206,68 @@ func findTitle(n *html.Node) string {
 		}
 	}
 	return ""
+}
+
+func writeRespMemory(resp *http.Response) {
+	// memorizes responses
+	foundStore, exists := RespMemoryStore[resp.StatusCode]
+
+	respBody, bodyErr := io.ReadAll(resp.Body)
+	var respLength int
+	if bodyErr == nil {
+		respLength = len(respBody)
+	}
+
+	if exists {
+		if resp.StatusCode >= 300 && resp.StatusCode < 400 {
+			// 300 codes have varied resp length (ignore variation)
+			RespMemoryStore[resp.StatusCode][0].occurenceCount += 1
+			return
+		}
+
+		foundResp, exists, index := findRespByLength(foundStore, respLength)
+		if exists {
+			// update existend response
+			foundResp.occurenceCount += 1
+			foundResp.requests = append(foundResp.requests, requestToString(resp.Request))
+			RespMemoryStore[resp.StatusCode][index] = foundResp
+			return
+		}
+	}
+
+	// add response to memory
+	newReqMemory := RespMemory{
+		respCode:       resp.StatusCode,
+		respLength:     respLength,
+		occurenceCount: 1,
+		requests:       []string{requestToString(resp.Request)},
+	}
+	RespMemoryStore[resp.StatusCode] = append(RespMemoryStore[resp.StatusCode], newReqMemory)
+}
+
+func findRespByLength(responses []RespMemory, respLength int) (RespMemory, bool, int) {
+	for i, resp := range responses {
+		if resp.respLength == respLength {
+			return resp, true, i
+		}
+	}
+	return RespMemory{}, false, 0
+}
+
+func requestToString(req *http.Request) string {
+	var sb strings.Builder
+
+	// Write request line
+	fmt.Fprintf(&sb, "%s %s %s\r\n", req.Method, req.URL, req.Proto)
+
+	// Write headers
+	req.Header.Write(&sb)
+	sb.WriteString("\r\n")
+
+	// Write body (if present)
+	if req.Body != nil {
+		sb.WriteString("[Body content]")
+	}
+
+	return sb.String()
 }
