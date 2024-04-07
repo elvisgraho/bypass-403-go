@@ -48,7 +48,7 @@ func FingerprintRequests(userSettings UserSettings) {
 		nonExistentPathUrl := userSettings.Url.Scheme + "://" + userSettings.Url.Host + rootPathRandom
 		respNonexPth, errNonExPth := HttpRequest(nonExistentPathUrl, "GET", "", userSettings)
 		if errNonExPth != nil {
-			log.Printf("Nonexistent URL /%s fingerprint error: %v", rootPathRandom, errNonExPth)
+			log.Printf("Nonexistent URL %s fingerprint error: %v", rootPathRandom, errNonExPth)
 		} else {
 			WriteRespMemory(respNonexPth, FingerprintStore)
 		}
