@@ -35,9 +35,9 @@ func FingerprintRequests(userSettings UserSettings) {
 	respNonex, errNonEx := HttpRequest(nonExistentUrl, "GET", "", userSettings)
 	if errNonEx != nil {
 		log.Printf("Nonexistent URL /%s fingerprint error: %v", randomString, errNonEx)
+	} else {
+		WriteRespMemory(respNonex, FingerprintStore)
 	}
-
-	WriteRespMemory(respNonex, FingerprintStore)
 }
 
 func WriteRespMemory(resp *http.Response, respStore map[int][]RespMemory) {
