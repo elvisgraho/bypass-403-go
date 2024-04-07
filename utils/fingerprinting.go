@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -37,6 +38,19 @@ func FingerprintRequests(userSettings UserSettings) {
 		log.Printf("Nonexistent URL /%s fingerprint error: %v", randomString, errNonEx)
 	} else {
 		WriteRespMemory(respNonex, FingerprintStore)
+	}
+
+	// fingerprint random at root path, ex: /admin/api -> /admin/RANDOM
+	rootPath := filepath.Dir(userSettings.Url.Path)
+	rootPath = strings.ReplaceAll(rootPath, "\\", "/")
+	if rootPath != "" && rootPath != "/" && rootPath != "\\" {
+		nonExistentPathUrl := userSettings.Url.Scheme + "://" + userSettings.Url.Host + rootPath + "/" + randomString
+		respNonexPth, errNonExPth := HttpRequest(nonExistentPathUrl, "GET", "", userSettings)
+		if errNonExPth != nil {
+			log.Printf("Nonexistent URL /%s fingerprint error: %v", randomString, errNonEx)
+		} else {
+			WriteRespMemory(respNonexPth, FingerprintStore)
+		}
 	}
 }
 
@@ -98,13 +112,13 @@ func requestToString(req *http.Request) string {
 	return sb.String()
 }
 
-func CheckFingerprint(resp *http.Response) bool {
+func DoesNotMatchFingerprint(resp *http.Response) bool {
 	foundFingerprint, exists := FingerprintStore[resp.StatusCode]
 
 	if exists {
 		_, exists, _ := findRespByLength(foundFingerprint, resp.ContentLength)
 		if exists {
-			// the response exists in fingerprint, dont print it to user
+			// the response exists in fingerprint
 			return false
 		}
 	}

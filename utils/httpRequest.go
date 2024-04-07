@@ -118,10 +118,11 @@ func GetRandomUserAgent() string {
 
 func PrintRespInformation(resp *http.Response, additionalOutString string, userSettings UserSettings, show300 bool) {
 	var stringToPrint string
-	doShow400 := userSettings.DoShow400 || CheckFingerprint(resp)
+	var doesNotMatchFingerpting = DoesNotMatchFingerprint(resp)
+	doShow400 := userSettings.DoShow400 || doesNotMatchFingerpting
 
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		// Successful response
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 && doesNotMatchFingerpting {
+		// Successful response, do not show if the same as fingerprint
 		stringToPrint = fmt.Sprintf("\x1b[32m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
 	} else if (resp.StatusCode >= 400 && resp.StatusCode < 500) && doShow400 {
 		// try to read body
