@@ -44,10 +44,11 @@ func FingerprintRequests(userSettings UserSettings) {
 	rootPath := filepath.Dir(userSettings.Url.Path)
 	rootPath = strings.ReplaceAll(rootPath, "\\", "/")
 	if rootPath != "" && rootPath != "/" && rootPath != "\\" {
-		nonExistentPathUrl := userSettings.Url.Scheme + "://" + userSettings.Url.Host + rootPath + "/" + randomString
+		rootPathRandom := rootPath + "/" + randomString
+		nonExistentPathUrl := userSettings.Url.Scheme + "://" + userSettings.Url.Host + rootPathRandom
 		respNonexPth, errNonExPth := HttpRequest(nonExistentPathUrl, "GET", "", userSettings)
 		if errNonExPth != nil {
-			log.Printf("Nonexistent URL /%s fingerprint error: %v", randomString, errNonEx)
+			log.Printf("Nonexistent URL /%s fingerprint error: %v", rootPathRandom, errNonExPth)
 		} else {
 			WriteRespMemory(respNonexPth, FingerprintStore)
 		}
