@@ -24,6 +24,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// fingerprint server
+	utils.FingerprintRequests(userSettings)
+
 	// HTTP Method Attack
 	if !userSettings.DoSkipMethodsAttack && payloads["methods.txt"] != nil {
 		utils.HttpMethodAttack(userSettings, payloads["methods.txt"])

@@ -17,7 +17,7 @@ func SingleHeaderAttack(userSettings UserSettings, header string, method string)
 	}
 
 	// Handle the HTTP response
-	HandleHTTPResponse(resp, header, userSettings)
+	HandleHTTPResponse(resp, header, userSettings, true)
 }
 
 func HttpMethodAttack(userSettings UserSettings, methods []string) {
@@ -29,7 +29,7 @@ func HttpMethodAttack(userSettings UserSettings, methods []string) {
 			return
 		}
 		// Handle the HTTP response
-		HandleHTTPResponse(resp, "", userSettings)
+		HandleHTTPResponse(resp, "", userSettings, true)
 	}
 }
 
@@ -51,7 +51,7 @@ func UrlAfterAttack(userSettings UserSettings, payloadList []string) {
 			return
 		}
 		// Handle the HTTP response
-		HandleHTTPResponse(resp, "", userSettings)
+		HandleHTTPResponse(resp, "", userSettings, false)
 	}
 }
 
@@ -71,7 +71,7 @@ func UrlBeforeAttack(userSettings UserSettings, payloadList []string) {
 			}
 
 			// Handle the HTTP response
-			HandleHTTPResponse(resp, "", userSettings)
+			HandleHTTPResponse(resp, "", userSettings, false)
 		}
 	}
 }

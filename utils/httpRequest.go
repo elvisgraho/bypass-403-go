@@ -13,15 +13,6 @@ import (
 	"golang.org/x/net/html"
 )
 
-type RespMemory struct {
-	respCode       int
-	respLength     int
-	occurenceCount int
-	requests       []string
-}
-
-var RespMemoryStore = map[int][]RespMemory{}
-
 // List of user agents
 var userAgents = []string{
 	"Mozilla/5.0 (Linux; Android 10; BLA-L29) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36 EdgA/45.06.4.5043",
@@ -99,8 +90,8 @@ func HttpRequest(url, method string, header string, userSettings UserSettings) (
 	return client.Do(req)
 }
 
-func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSettings UserSettings) {
-	writeRespMemory(resp)
+func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSettings UserSettings, show300 bool) {
+	WriteRespMemory(resp, RespMemoryStore)
 
 	for _, size := range userSettings.FilterSize {
 		if resp.ContentLength == int64(size) {
@@ -108,7 +99,6 @@ func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSet
 			return
 		}
 	}
-
 	for _, code := range userSettings.FilterCode {
 		if resp.StatusCode == code {
 			defer resp.Body.Close()
@@ -116,7 +106,7 @@ func HandleHTTPResponse(resp *http.Response, additionalOutString string, userSet
 		}
 	}
 
-	PrintRespInformation(resp, additionalOutString, userSettings)
+	PrintRespInformation(resp, additionalOutString, userSettings, show300)
 	// Close the response body
 	defer resp.Body.Close()
 }
@@ -126,16 +116,17 @@ func GetRandomUserAgent() string {
 	return userAgents[rand.Intn(len(userAgents))]
 }
 
-func PrintRespInformation(resp *http.Response, additionalOutString string, userSettings UserSettings) {
+func PrintRespInformation(resp *http.Response, additionalOutString string, userSettings UserSettings, show300 bool) {
 	var stringToPrint string
+	doShow400 := userSettings.DoShow400 || CheckFingerprint(resp)
 
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		// Successful response
 		stringToPrint = fmt.Sprintf("\x1b[32m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
-	} else if (resp.StatusCode >= 400 || resp.StatusCode < 500) && userSettings.DoShow400 {
+	} else if (resp.StatusCode >= 400 && resp.StatusCode < 500) && doShow400 {
 		// try to read body
 		stringToPrint = fmt.Sprintf("\x1b[31m%d Error. Length: %d. %s %s %s\x1b[0m\n", resp.StatusCode, resp.ContentLength, resp.Request.Method, resp.Request.URL, additionalOutString)
-	} else if resp.StatusCode >= 300 && resp.StatusCode < 400 {
+	} else if (resp.StatusCode >= 300 && resp.StatusCode < 400) && show300 {
 		// print out 300 resp
 		stringToPrint = fmt.Sprintf("\x1b[33m%s %s %s. Length: %d. %s\x1b[0m\n", resp.Request.Method, resp.Request.URL, resp.Status, resp.ContentLength, additionalOutString)
 	} else {
@@ -146,7 +137,6 @@ func PrintRespInformation(resp *http.Response, additionalOutString string, userS
 	if stringToPrint != "" {
 		PrintRespHtml(resp, userSettings, stringToPrint)
 	}
-
 }
 
 func PrintRespHtml(resp *http.Response, userSettings UserSettings, stringToPrint string) {
@@ -206,68 +196,4 @@ func findTitle(n *html.Node) string {
 		}
 	}
 	return ""
-}
-
-func writeRespMemory(resp *http.Response) {
-	// memorizes responses
-	foundStore, exists := RespMemoryStore[resp.StatusCode]
-
-	respBody, bodyErr := io.ReadAll(resp.Body)
-	var respLength int
-	if bodyErr == nil {
-		respLength = len(respBody)
-	}
-
-	if exists {
-		if resp.StatusCode >= 300 && resp.StatusCode < 400 {
-			// 300 codes have varied resp length (ignore variation)
-			RespMemoryStore[resp.StatusCode][0].occurenceCount += 1
-			return
-		}
-
-		foundResp, exists, index := findRespByLength(foundStore, respLength)
-		if exists {
-			// update existend response
-			foundResp.occurenceCount += 1
-			foundResp.requests = append(foundResp.requests, requestToString(resp.Request))
-			RespMemoryStore[resp.StatusCode][index] = foundResp
-			return
-		}
-	}
-
-	// add response to memory
-	newReqMemory := RespMemory{
-		respCode:       resp.StatusCode,
-		respLength:     respLength,
-		occurenceCount: 1,
-		requests:       []string{requestToString(resp.Request)},
-	}
-	RespMemoryStore[resp.StatusCode] = append(RespMemoryStore[resp.StatusCode], newReqMemory)
-}
-
-func findRespByLength(responses []RespMemory, respLength int) (RespMemory, bool, int) {
-	for i, resp := range responses {
-		if resp.respLength == respLength {
-			return resp, true, i
-		}
-	}
-	return RespMemory{}, false, 0
-}
-
-func requestToString(req *http.Request) string {
-	var sb strings.Builder
-
-	// Write request line
-	fmt.Fprintf(&sb, "%s %s %s\r\n", req.Method, req.URL, req.Proto)
-
-	// Write headers
-	req.Header.Write(&sb)
-	sb.WriteString("\r\n")
-
-	// Write body (if present)
-	if req.Body != nil {
-		sb.WriteString("[Body content]")
-	}
-
-	return sb.String()
 }

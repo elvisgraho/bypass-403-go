@@ -37,13 +37,19 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Header.Get("X-Forward-For") == "192.168.100.100" {
+	if r.Header.Get("X-Forward-For") == "169.254.169.254" {
 		// handle different error lengths
-		http.Error(w, "You are not allowed!", http.StatusUnauthorized)
+		http.Error(w, "You are unauthorized!", http.StatusUnauthorized)
 		return
 	}
 
-	http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	if r.Header.Get("X-Forward-For") == "172.16.0.1" {
+		// handle different error lengths
+		http.Error(w, "You are not allowed!", http.StatusForbidden)
+		return
+	}
+
+	http.Error(w, "Unauthorized", http.StatusForbidden)
 }
 
 func bypassHandler(w http.ResponseWriter, r *http.Request) {
