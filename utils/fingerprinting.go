@@ -181,6 +181,10 @@ func RandomStringGen(length int) string {
 }
 
 func notifyOnProxyDetect(resp1 *http.Response, resp2 *http.Response) {
+	if resp1 == nil || resp2 == nil {
+		return
+	}
+
 	if resp1.ContentLength != resp2.ContentLength {
 		// different responses
 		fmt.Print("\x1b[32mProxy Detected!\x1b[0m\n")
