@@ -78,7 +78,7 @@ func FingerprintRequests(userSettings UserSettings) {
 		notifyOnProxyDetect(respNonexPath, respNonexPathAfter)
 	}
 
-	// try to fingerpring 400
+	// try to fingerprint 400
 	error400Url := userSettings.Url.Scheme + "://" + userSettings.Url.Host + escapeTest
 	resp400, err400 := HttpRequest(error400Url, "GET", "", userSettings)
 	if err400 != nil {
@@ -87,7 +87,7 @@ func FingerprintRequests(userSettings UserSettings) {
 		WriteRespMemory(resp400, FingerprintStore)
 	}
 
-	// try to fingerpring 400 after path
+	// try to fingerprint 400 after path
 	error400UrlAfter := userSettings.Url.String() + escapeTest
 	resp400after, err400after := HttpRequest(error400UrlAfter, "GET", "", userSettings)
 	if err400after != nil {

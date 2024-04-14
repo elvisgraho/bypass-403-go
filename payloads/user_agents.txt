@@ -186,3 +186,26 @@ User-Agent: Website Explorer/0.9.x.x
 User-Agent: zermelo Mozilla/5.0 compatible; heritrix/1.12.1 (+http://www.powerset.com) [email:crawl@powerset.com&#44;email:paul@page-store.com]
 User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 (FM Scene 4.6.1)
 User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 (.NET CLR 3.5.30729) (Prevx 3.0.5)
+User-Agent: facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)
+User-Agent: Nessus
+User-Agent: NESSUS::SOAP
+User-Agent: Nessus/190402
+User-Agent: curl/7.58.0
+User-Agent: curl/7.47.0
+User-Agent: curl/7.68.0
+User-Agent: axios/0.27.2
+User-Agent: python-requests/2.28.1
+User-Agent: Python/3.8 aiohttp/3.8.1
+User-Agent: python-httpx/0.23.3
+User-Agent: Python-urllib/2.7
+User-Agent: python-urllib3/1.26.12
+User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; AFTS Build/LVY48F)
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.5 Mobile/15E148 Safari/604.1
+User-Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5.1 Safari/605.
+User-Agent: Mozilla/5.0 (PlayStation 4 1.70) AppleWebKit/536.26 (KHTML, like Gecko)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; Xbox; Xbox One) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10553
+User-Agent: Mozilla/5.0 (X11; Linux armv7l) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.0 Safari/537.36 CrKey/1.5.16041
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.
+User-Agent: Roku4640X/DVP-7.70 (297.70E04154A)

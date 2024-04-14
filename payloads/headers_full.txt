@@ -20,3 +20,17 @@ Accept: application/x-www-form-urlencoded
 Accept: application/protobuf
 Accept: application/x-protobu
 Accept: application/x-www-form-urlencoded
+Connection: Close, Accept
+Connection: Close, Accept-Application
+Connection: Close, Accept-Charset
+Connection: Close, Accepted
+Connection: Close, Accept-Encoding
+Connection: Close, Accept-Encodxng
+Connection: Close, Accept-Language
+Connection: Close, Accept-Ranges
+Connection: Close, Accept-Version
+Connection: Close, Access-Control-Allow-Credentials
+Connection: Close, Access-Control-Allow-Headers
+Connection: Close, Access-Control-Allow-Methods
+Connection: Close, Access-Control-Allow-Origin
+Connection: Close, Access-Control-Expose-Headers
