@@ -10,6 +10,7 @@ User-Agent: del.icio.us-thumbnails/1.0 Mozilla/5.0 (compatible; Konqueror/3.4; F
 User-Agent: Firefox (kastaneta03@hotmail.com)
 User-Agent: Firefox_1.0.6 (kasparek@naparek.cz)
 User-Agent: libcurl-agent/1.0
+User-Agent: Twitterbot/1.0
 User-Agent: Microsoft_Internet_Explorer_5.00.438 (fjones@isd.net)
 User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; Deepnet Explorer)
 User-Agent: Mozilla/5.0

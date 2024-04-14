@@ -21,37 +21,79 @@ var RespMemoryStore = map[int][]RespMemory{}
 var FingerprintStore = map[int][]RespMemory{}
 
 func FingerprintRequests(userSettings UserSettings) {
+	randomString12 := RandomStringGen(12)
+	randomMethod := RandomStringGen(5)
+	escapeTest := "/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f"
+
 	// Fingerprint user supplied GET
 	respGet, errGet := HttpRequest(userSettings.Url.String(), "GET", "", userSettings)
 	if errGet != nil {
 		log.Printf("Failed to fingerprint the target: %v", errGet)
 		os.Exit(1)
+	} else {
+		WriteRespMemory(respGet, FingerprintStore)
 	}
 
-	WriteRespMemory(respGet, FingerprintStore)
+	// fingerprint non existent method
+	respNonMethod, errNonMethod := HttpRequest(userSettings.Url.String(), randomMethod, "", userSettings)
+	if errNonMethod != nil {
+		log.Printf("Failed to fingerprint the target: %v", errNonMethod)
+	} else {
+		WriteRespMemory(respNonMethod, FingerprintStore)
+	}
 
-	randomString := RandomStringGen(12)
-	nonExistentUrl := userSettings.Url.Scheme + "://" + userSettings.Url.Host + "/" + randomString
-
+	// fingerptint non existent url
+	nonExistentUrl := userSettings.Url.Scheme + "://" + userSettings.Url.Host + "/" + randomString12
 	respNonex, errNonEx := HttpRequest(nonExistentUrl, "GET", "", userSettings)
 	if errNonEx != nil {
-		log.Printf("Nonexistent URL /%s fingerprint error: %v", randomString, errNonEx)
+		log.Printf("Nonexistent URL /%s fingerprint error: %v", randomString12, errNonEx)
 	} else {
 		WriteRespMemory(respNonex, FingerprintStore)
 	}
 
-	// fingerprint random at root path, ex: /admin/api -> /admin/RANDOM
+	// get path -> /admin/api/v1
 	rootPath := filepath.Dir(userSettings.Url.Path)
 	rootPath = strings.ReplaceAll(rootPath, "\\", "/")
 	if rootPath != "" && rootPath != "/" && rootPath != "\\" {
-		rootPathRandom := rootPath + "/" + randomString
+		// fingerprint random at root path, ex: /admin/api/v1 -> /admin/api/RANDOM
+		rootPathRandom := rootPath + "/" + randomString12
 		nonExistentPathUrl := userSettings.Url.Scheme + "://" + userSettings.Url.Host + rootPathRandom
-		respNonexPth, errNonExPth := HttpRequest(nonExistentPathUrl, "GET", "", userSettings)
-		if errNonExPth != nil {
-			log.Printf("Nonexistent URL %s fingerprint error: %v", rootPathRandom, errNonExPth)
+		respNonexPath, errNonExPath := HttpRequest(nonExistentPathUrl, "GET", "", userSettings)
+		if errNonExPath != nil {
+			log.Printf("Nonexistent URL %s fingerprint error: %v", rootPathRandom, errNonExPath)
 		} else {
-			WriteRespMemory(respNonexPth, FingerprintStore)
+			WriteRespMemory(respNonexPath, FingerprintStore)
 		}
+
+		// fingerptint non existent after path, ex: /admin/api/v1/RANDOM
+		nonExistentUrlPath := userSettings.Url.String() + "/" + randomString12
+		respNonexPathAfter, errNonExPathAfter := HttpRequest(nonExistentUrlPath, "GET", "", userSettings)
+		if errNonExPathAfter != nil {
+			log.Printf("Nonexistent URL /%s fingerprint error: %v", randomString12, errNonExPathAfter)
+		} else {
+			WriteRespMemory(respNonexPathAfter, FingerprintStore)
+		}
+
+		// check if there two have different responces, if yes, tell the user
+		notifyOnProxyDetect(respNonexPath, respNonexPathAfter)
+	}
+
+	// try to fingerpring 400
+	error400Url := userSettings.Url.Scheme + "://" + userSettings.Url.Host + escapeTest
+	resp400, err400 := HttpRequest(error400Url, "GET", "", userSettings)
+	if err400 != nil {
+		log.Printf("Failed to fingerprint the target: %v", err400)
+	} else if resp400.StatusCode == 400 {
+		WriteRespMemory(resp400, FingerprintStore)
+	}
+
+	// try to fingerpring 400 after path
+	error400UrlAfter := userSettings.Url.String() + escapeTest
+	resp400after, err400after := HttpRequest(error400UrlAfter, "GET", "", userSettings)
+	if err400after != nil {
+		log.Printf("Failed to fingerprint the target: %v", err400after)
+	} else if resp400after.StatusCode == 400 {
+		WriteRespMemory(resp400after, FingerprintStore)
 	}
 }
 
@@ -136,4 +178,15 @@ func RandomStringGen(length int) string {
 		b[i] = charset[rand.Intn(len(charset))]
 	}
 	return string(b)
+}
+
+func notifyOnProxyDetect(resp1 *http.Response, resp2 *http.Response) {
+	if resp1.ContentLength != resp2.ContentLength {
+		// different responses
+		fmt.Print("\x1b[32mProxy Detected!\x1b[0m\n")
+		fmt.Printf("Req 1 Content Length: %d\n", resp1.ContentLength)
+		fmt.Printf("%s", requestToString(resp1.Request))
+		fmt.Printf("Reg 2 Content Length: %d\n", resp2.ContentLength)
+		fmt.Printf("%s", requestToString(resp2.Request))
+	}
 }
