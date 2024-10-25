@@ -42,6 +42,17 @@ func main() {
 		utils.UrlAfterAttack(userSettings, payloads["url_after.txt"])
 	}
 
+	if !userSettings.DoSkipUrlAttacks {
+		// Calizalize last char
+		utils.UrlCapitalizeLastCharAttack(userSettings)
+		// Capitalize last url path
+		utils.UrlCapitalizeAttack(userSettings)
+		// Url Encode Last Char
+		utils.UrlLastCharUrlEncode(userSettings)
+		// Double Url Encode Last Char
+		utils.UrlLastCharDoubleUrlEncode(userSettings)
+	}
+
 	// X forwarded Ports Attack
 	if payloads["ports.txt"] != nil {
 		utils.XForwardedPortsAttack(userSettings, payloads["ports.txt"])
