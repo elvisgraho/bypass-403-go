@@ -55,6 +55,136 @@ func UrlAfterAttack(userSettings UserSettings, payloadList []string) {
 	}
 }
 
+func UrlCapitalizeLastCharAttack(userSettings UserSettings) {
+	// example: https://t.com/admiN
+	newUrl := userSettings.Url.String()
+
+	// Split the URL into segments
+	segments := strings.Split(newUrl, "/")
+	if len(segments) > 0 {
+		lastSegment := segments[len(segments)-1]
+
+		// Check if the last segment is not empty
+		if len(lastSegment) > 0 {
+			// Get the last character and capitalize it
+			lastChar := lastSegment[len(lastSegment)-1:]
+			capitalizedChar := strings.ToUpper(lastChar)
+
+			// Replace the last character with the capitalized version
+			newLastSegment := lastSegment[:len(lastSegment)-1] + capitalizedChar
+			segments[len(segments)-1] = newLastSegment
+
+			// Reconstruct the new URL
+			newUrl = strings.Join(segments, "/")
+		}
+	}
+
+	// Send HTTP request for each method
+	resp, err := HttpRequest(newUrl, "GET", "", userSettings)
+	if err != nil {
+		AttackHttpErrorHandling(err)
+		return
+	}
+
+	// Handle the HTTP response
+	HandleHTTPResponse(resp, "", userSettings, false)
+}
+
+func UrlCapitalizeAttack(userSettings UserSettings) {
+	// example: https://t.com/ADMIN
+	newUrl := userSettings.Url.String()
+
+	// Capitalize the last part of the path
+	segments := strings.Split(newUrl, "/")
+	if len(segments) > 0 {
+		lastSegment := strings.ToUpper(segments[len(segments)-1])
+		segments[len(segments)-1] = lastSegment
+		newUrl = strings.Join(segments, "/")
+	}
+
+	// Send HTTP request for each method
+	resp, err := HttpRequest(newUrl, "GET", "", userSettings)
+	if err != nil {
+		AttackHttpErrorHandling(err)
+		return
+	}
+	// Handle the HTTP response
+	HandleHTTPResponse(resp, "", userSettings, false)
+}
+
+func UrlLastCharUrlEncode(userSettings UserSettings) {
+	// example: https://t.com/admi%6E
+	newUrl := userSettings.Url.String()
+
+	// Split the URL into segments
+	segments := strings.Split(newUrl, "/")
+	if len(segments) > 0 {
+		// Get the last segment
+		lastSegment := segments[len(segments)-1]
+
+		// Check if the last segment is not empty
+		if len(lastSegment) > 0 {
+			// Get the last character
+			lastChar := lastSegment[len(lastSegment)-1:]
+
+			// Convert the last character to its ASCII value and then to a hex string
+			encodedChar := fmt.Sprintf("%%%X", lastChar[0])
+
+			// Replace the last character with its encoded representation
+			newLastSegment := lastSegment[:len(lastSegment)-1] + encodedChar
+			segments[len(segments)-1] = newLastSegment
+
+			// Reconstruct the new URL
+			newUrl = strings.Join(segments, "/")
+		}
+	}
+
+	// Send HTTP request for each method
+	resp, err := HttpRequest(newUrl, "GET", "", userSettings)
+	if err != nil {
+		AttackHttpErrorHandling(err)
+		return
+	}
+
+	// Handle the HTTP response
+	HandleHTTPResponse(resp, "", userSettings, false)
+}
+
+func UrlLastCharDoubleUrlEncode(userSettings UserSettings) {
+	// example: https://t.com/admi%256E
+	newUrl := userSettings.Url.String()
+
+	// Split the URL into segments
+	segments := strings.Split(newUrl, "/")
+	if len(segments) > 0 {
+		// Get the last segment
+		lastSegment := segments[len(segments)-1]
+
+		// Get the last character
+		lastChar := lastSegment[len(lastSegment)-1:]
+
+		// Convert the last character to its ASCII value and then to a hex string
+		encodedChar := fmt.Sprintf("%%25%X", lastChar[0])
+
+		// Replace the last character with its encoded representation
+		newLastSegment := lastSegment[:len(lastSegment)-1] + encodedChar
+		segments[len(segments)-1] = newLastSegment
+
+		// Reconstruct the new URL
+		newUrl = strings.Join(segments, "/")
+	}
+
+	// Send HTTP request for each method
+	resp, err := HttpRequest(newUrl, "GET", "", userSettings)
+	if err != nil {
+		AttackHttpErrorHandling(err)
+		return
+	}
+
+	// Handle the HTTP response
+	HandleHTTPResponse(resp, "", userSettings, false)
+}
+
 func UrlBeforeAttack(userSettings UserSettings, payloadList []string) {
 	// example: https://t.com/./admin
 	hostWithProtocol := userSettings.Url.Scheme + "://" + userSettings.Url.Host
