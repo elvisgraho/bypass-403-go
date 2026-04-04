@@ -1,0 +1,35 @@
+User-Agent: curl/8.5.0
+User-Agent: Wget/1.21.4
+User-Agent: Go-http-client/1.1
+User-Agent: fasthttp
+User-Agent: python-requests/2.31.0
+User-Agent: python-httpx/0.27.0
+User-Agent: Python/3.11 aiohttp/3.9.3
+User-Agent: python-urllib3/2.2.1
+User-Agent: Java-http-client/17.0.10
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+User-Agent: Apache-HttpClient/5.2.1 (Java/17.0.10)
+User-Agent: okhttp/4.12.0
+User-Agent: PostmanRuntime/7.36.3
+User-Agent: axios/1.6.8
+User-Agent: undici
+User-Agent: GuzzleHttp/7
+User-Agent: Faraday v2.9.0
+User-Agent: RestSharp/110.2.0
+User-Agent: HTTPie/3.2.2
+User-Agent: GitHub-Hookshot/3f4f12b
+User-Agent: Stripe/1.0 (+https://stripe.com/docs/webhooks)
+User-Agent: TwilioProxy/1.1
+User-Agent: Slackbot 1.0 (+https://api.slack.com/robots)
+User-Agent: Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)
+User-Agent: Zapier
+User-Agent: Workato
+User-Agent: Shopify Pingdom Monitor
+User-Agent: Datadog/Synthetics
+User-Agent: Pingdom.com_bot_version_1.4_(https://www.pingdom.com/)
+User-Agent: UptimeRobot/2.0
+User-Agent: StatusCake
+User-Agent: Better Stack Uptime Bot
+User-Agent: GoogleHC/1.0
+User-Agent: NewRelicPinger
+User-Agent: Nessus

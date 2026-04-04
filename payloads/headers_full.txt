@@ -1,0 +1,36 @@
+Accept: application/json
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9
+Accept: text/html,application/xhtml+xml;q=0.9
+Accept: text/html;q=0.9
+Accept: text/plain;q=0.9
+Accept: text/plain
+Accept: text/*
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8
+Accept: text/html,application/xhtml+xml;q=0.9,text/plain;q=0.8
+Accept: text/html,application/xhtml+xml;q=0.9,text/plain;q=0.8,/;q=0.5
+Accept: text/html,application/xhtml+xml,text/plain;q=0.8,/;q=0.5
+Accept: application/x-amz-json-1.1
+Accept: application/x-amz-rest-json
+Accept: application/x-amz-rest-xml
+Accept: application/x-amz-json-1.0
+Accept: application/xml
+Accept: application/atom+xml
+Accept: application/octet-stream
+Accept: application/x-www-form-urlencoded
+Accept: application/protobuf
+Accept: application/x-protobu
+Accept: application/x-www-form-urlencoded
+Connection: Close, Accept
+Connection: Close, Accept-Application
+Connection: Close, Accept-Charset
+Connection: Close, Accepted
+Connection: Close, Accept-Encoding
+Connection: Close, Accept-Encodxng
+Connection: Close, Accept-Language
+Connection: Close, Accept-Ranges
+Connection: Close, Accept-Version
+Connection: Close, Access-Control-Allow-Credentials
+Connection: Close, Access-Control-Allow-Headers
+Connection: Close, Access-Control-Allow-Methods
+Connection: Close, Access-Control-Allow-Origin
+Connection: Close, Access-Control-Expose-Headers

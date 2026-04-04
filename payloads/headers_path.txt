@@ -1,0 +1,3 @@
+X-Rewrite-URL
+X-Original-URL
+Referer

@@ -1,0 +1,14 @@
+[Unit]
+Description=Bypass 403 Go Playground
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/bypass-403-playground
+ExecStart=/opt/bypass-403-playground/playground
+Restart=always
+RestartSec=2
+Environment=PORT=8080
+
+[Install]
+WantedBy=multi-user.target
