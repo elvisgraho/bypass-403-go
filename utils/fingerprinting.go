@@ -23,7 +23,7 @@ var FingerprintStore = map[int][]RespMemory{}
 func FingerprintRequests(userSettings UserSettings) {
 	randomString12 := RandomStringGen(12)
 	randomMethod := RandomStringGen(5)
-	escapeTest := "/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f"
+	escapeTest := "/..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F"
 
 	// Fingerprint user supplied GET
 	respGet, errGet := HttpRequest(userSettings.Url.String(), "GET", "", userSettings)
